@@ -7,7 +7,8 @@ public class Permanent {
 	
 	private int x; //x-coordinate of position
 	private int y; //y-coordinate of position
-	private int hp = 10; //health points
+	private int hp = 2; //health points
+	private int team; //one or two
 	private String name; 
 	private int prevX;
 	private int prevY;
@@ -38,11 +39,9 @@ public class Permanent {
 	
 	protected Color c; //temporary for testing
 	
-	public Permanent(String name, int x, int y, Color c) {
+	public Permanent(String name, Color c) {
 		
 		this.name = name;
-		this.x = x;
-		this.y = y;
 		this.c = c;
 		
 	}
@@ -58,16 +57,29 @@ public class Permanent {
 	
 	public String attack(Permanent p){
 		
-		return "";
+		if(p.getTeam() == team) return "";
+		
+		int damage = 1;
+		
+		p.changeHealth(-damage);
+		
+		
+		
+		return name + " swings for " + damage + " on " + p.getName() + ".";
 		
 	}
 	
 	public boolean changeHealth(int change){
 		
-		if(immortal) return false;
+		if(!immortal) hp += change;
 		
-		hp += change;
+		return isAlive();
 		
+	}
+	
+	public boolean isAlive() {
+		
+		if(hp <= 0) return false;
 		return true;
 		
 	}
@@ -80,6 +92,25 @@ public class Permanent {
 	}
 	
 	public Point getPosition() { return new Point(x, y); }
+	
+	public void setPosition(int x, int y) {
+		
+		this.x = x;
+		this.y = y;
+		
+	}
+	
+	public void setTeam(int team) {
+		
+		this.team = team;
+		
+	}
+	
+	public int getTeam() {
+		
+		return team;
+		
+	}
 	
 	public int x() { return x; }
 	

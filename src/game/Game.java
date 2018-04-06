@@ -13,28 +13,51 @@ import java.awt.event.*;
 
 public class Game extends JPanel {
 
+	
+	/*
+	 * 
+	 * TODO
+	 * 
+	 * organize methods in Game
+	 * 
+	 */
+	
 	private static final long serialVersionUID = 1L;
 	
 	private static final int length = 50; //length of each tile
     private ArrayDeque<Permanent> units;
-    private ArrayDeque<String> console;
+    private ArrayDeque<String> console; //most recent ten messages
     private int curTurnAP;
-    private Permanent cur;
+    private Permanent cur; //unit whose turn it is
     private Tile[][] grid;
     private Hashtable<Integer, Boolean> marked;
     
-    public Game(Tile[][] arr) {
+    public Game(Tile[][] arr, Iterable<Permanent> team1, Iterable<Permanent> team2) {
 
     	grid = Arrays.copyOf(arr, arr.length);
     	marked = new Hashtable<Integer, Boolean>();
     	console = new ArrayDeque<String>();
-    	
     	units = new ArrayDeque<Permanent>();
     	
-    	units.add(new Permanent("PINK", 2, 9, Color.PINK));
-    	units.add(new Permanent("GREEN", 18, 9, Color.GREEN));
-    	units.add(new Permanent("RED", 8, 9, Color.RED));
-    	units.add(new Permanent("WHITE", 12, 9, Color.WHITE));
+    	int i = 1;
+    	for(Permanent p : team1) {
+    		
+    		p.setPosition(1, 2 + (4 * i));
+    		p.setTeam(1);
+    		units.add(p);
+    		i++;
+    		
+    	}
+    	i = 1;
+    	for(Permanent p : team2) {
+    		
+    		p.setPosition(width() - 2, 2 + (4 * i));
+    		p.setTeam(2);
+    		units.add(p);
+    		i++;
+    		
+    	}
+    	
     	
     	for(Permanent p : units){
     		
@@ -42,10 +65,11 @@ public class Game extends JPanel {
     		
     	}
     	
-    	curTurnAP = units.getFirst().getAP();
-    	cur = units.getFirst();
-    	
     	initListeners();
+    	
+    	cur = units.getFirst();
+		curTurnAP = cur.getAP();
+		toConsole(cur.getName() + " begins their turn.");
     		
     }
     
@@ -60,27 +84,43 @@ public class Game extends JPanel {
     			int x = toGridScale(e.getX());
     			int y = toGridScale(e.getY());
     			
-    			mouseClickInfo(x, y);
+    			//mouseClickInfo(x, y);
     			
     			if(marked.get(to1D(x, y)) != null) {
     				
-    				if((x != cur.x() || y != cur.y()) &&  grid[y][x].occupier() != null){
+    				Tile tile = grid[y][x];
+    				
+    				if((x != cur.x() || y != cur.y()) && tile.occupier() != null && tile.occupier().getTeam() != cur.getTeam()){ //if this is not cur's current location, this tile has an occupier, and that occupier is not the same team as the current unit
     					
-    					toConsole(cur.getName() + " attacks " + grid[y][x].occupier().getName() + " (1 Damage)");
-    					changeHP(grid[y][x].occupier(), -1);
-    					info(getGraphics());
-    					drawGrid(getGraphics());
+    					//toConsole(cur.getName() + " attacks " + grid[y][x].occupier().getName() + " (1 Damage)");
+    					//changeHP(grid[y][x].occupier(), -1);
+    					String attack = cur.attack(tile.occupier());
+    					
+    					if(!attack.isEmpty()) {
+    						
+    						toConsole(attack);
+    						if(!tile.occupier().isAlive()) {
+    							
+    							toConsole(tile.occupier().getName() + " DIES");
+    							kill(tile.occupier());
+
+    						}
+    						info(getGraphics());
+        					drawGrid(getGraphics());
+    						
+    					}
     					
     				}
     				
-    				curTurnAP -= getDistance(cur, x, y);
+    				curTurnAP -= getDistance(cur, x, y); //TODO fix this positioning and find out why it doesnt work anywhere else
     				
     				if(grid[y][x].put(cur)){
     					grid[cur.prevY()][cur.prevX()].remove();
+    					//curTurnAP -= getDistance(cur, x, y);
     					marked.clear(); 
     					drawGrid(getGraphics());
     				}
-    				
+    				    				
     				turnCheck();
 
     			}
@@ -93,20 +133,6 @@ public class Game extends JPanel {
     		}
     		
     	});  	
-    	
-    }
-    
-    private void changeHP(Permanent p, int change) {
-    	
-    	if(p.changeHealth(change)) {
-    		
-    		if(p.HP() <= 0) {
-    			toConsole(p.getName() + " DIES");
-    			kill(p);
-    			curTurnAP = -1;
-    		}
-    			
-    	}
     	
     }
     
@@ -177,7 +203,6 @@ public class Game extends JPanel {
     
     private int round(int i) {
     	
-    	//return Util.round(i, length);
     	return i - (i % length);
     	
     }
@@ -230,7 +255,7 @@ public class Game extends JPanel {
 		g.setColor(c);
 		drawTile(x, y, g);
 	
-}
+    }
     
     private void drawTile(int x, int y, Graphics g){
 
@@ -277,25 +302,33 @@ public class Game extends JPanel {
     
     private void info(Graphics g) {
     	
-    	int x = 1050;
+    	int x = 1010;
+    	int y = 150;
+    	int w = 240;
+    	int h = 20;
     	
-    	g.clearRect(x, 165, 165, 60 + (20 * (units.size() + console.size())));
+    	g.clearRect(x - 1, y - 20, w, h);
+    	g.drawString("It is " + cur.getName() + "'s turn, " + curTurnAP + " AP left", x, y - 5);
+    	
+    	y+=10;
+    	
+    	g.clearRect(x - 1, y, w, h + (10 * (units.size() + 1)));
     	g.setColor(Color.BLACK);
-    	g.drawString("super very high-tech console", x, 180);
-    	g.drawString("It is " + cur.getName() + "'s turn, " + curTurnAP + " AP left", x, 200);
     	
-    	int i = 1;
+    	y+=10;
+    	
     	for(Permanent p : units){
-    		g.drawString(p.getName() + " has " + p.HP() + " health points.", x, 200 + (20 * i));
-    		i++;
+    		g.drawString(p.getName() + " has " + p.HP() + " health points.", x, y);
+    		y+=15;
     	}
     	
-    	g.drawString("MESSAGES: ", x, 200 + (20 * i));
-    	i++;
+    	y+=15;
+    	g.clearRect(x - 1, y, w, h + (15 * (console.size() - 1)));
+    	y+=15;
     	
     	for(String s : console) {
-    		g.drawString(s, x, 200 + (20 * i));
-    		i++;
+    		g.drawString(s, x, y);
+    		y+=15;
     	}
     }
     
@@ -307,10 +340,8 @@ public class Game extends JPanel {
     		drawTile(p.x(), p.y(), g, p.c);
     		
     	}
-    	//rangeHelper(units.getFirst().x(), units.getFirst().y(), units.getFirst().getAP());
-    	
+
     }
-    
     
     
     private int width() {
