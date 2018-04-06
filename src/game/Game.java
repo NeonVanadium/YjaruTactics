@@ -2,6 +2,7 @@ package game;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
 import javax.swing.JPanel;
@@ -32,7 +33,9 @@ public class Game extends JPanel {
     private Permanent cur; //unit whose turn it is
     private Tile[][] grid;
     private Hashtable<Integer, Boolean> marked;
-    private final Permanent[] allFighters;
+    //private final Permanent[] allFighters; //TODO create two separate arrays for each team.
+    private final Permanent[] team1;
+    private final Permanent[] team2;
     
     public Game(Tile[][] arr, LinkedList<Permanent> team1, LinkedList<Permanent> team2) {
 
@@ -40,29 +43,32 @@ public class Game extends JPanel {
     	marked = new Hashtable<Integer, Boolean>();
     	console = new ArrayDeque<String>();
     	units = new ArrayDeque<Permanent>();
-    	allFighters = new Permanent[team1.size() * team2.size()];
+    	//allFighters = new Permanent[team1.size() + team2.size()];
+    	this.team1 = new Permanent[team1.size()];
+    	this.team2 = new Permanent[team2.size()];
     	
-    	int i = 1;
+    	int i = 0;
     	for(Permanent p : team1) {
     		
-    		p.setPosition(1, 2 + (4 * i));
+    		p.setPosition(1, 2 + (4 * (i + 1)));
     		p.setTeam(1);
-    		allFighters[i] = p;
+    		//allFighters[i] = p;
+    		this.team1[i] = p;
     		units.add(p);
     		i++;
     		
     	}
-    	i = 1;
+    	i = 0;
     	for(Permanent p : team2) {
     		
-    		p.setPosition(width() - 2, 2 + (4 * i));
+    		p.setPosition(width() - 2, 2 + (4 * (i + 1)));
     		p.setTeam(2);
-    		allFighters[i + (team1.size() - 1)] = p;
+    		//allFighters[i + (team1.size())] = p;
+    		this.team2[i] = p;
     		units.add(p);
     		i++;
     		
     	}
-    	
     	
     	for(Permanent p : units){
     		
@@ -214,7 +220,11 @@ public class Game extends JPanel {
     
     private void turnCheck() {
     	
-		if(curTurnAP <= 0) {
+    	if(units.size() <= 1){
+    		toConsole(cur.getName() + " WINS");
+    		
+    	}
+    	else if(curTurnAP <= 0) {
 			
 			units.addLast(units.removeFirst());
 			cur = units.getFirst();
@@ -305,38 +315,62 @@ public class Game extends JPanel {
     	
     }
     
-    private void info(Graphics g) {
+    private void info(Graphics g) {//TODO
     	
     	int x = 1010;
     	int y = 150;
     	int w = 240;
-    	int h = 20;
   
+    	new Font("Fonts/arial.tff", 100, 10);
     	
-    	g.clearRect(x - 1, y - 20, w, h);
+    	g.setFont(new Font("Fonts/arial.tff", 100, 10).deriveFont(100));
+    	
+    	//TOP
+    	g.clearRect(x - 1, 130, 210, 20);
     	g.drawString("It is " + cur.getName() + "'s turn, " + curTurnAP + " AP left", x, y - 5);
+    	//END TOP
     	
-    	y+=10;
+    	//TEAM BOXES
+    	y += 10;
     	
-    	g.clearRect(x - 1, y, w, h + (10 * (allFighters.length + 1)));
     	g.setColor(Color.BLACK);
     	
     	y+=10;
+    	int temp = y;
     	
-    	for(Permanent p : allFighters){
+    	//TEAM 1
+    	g.clearRect(x - 1, y - 10, 100, 20 + (10 * (team1.length)));
+    	
+    	for(Permanent p : team1){
+    		if(p != null){
+    			if(p.isAlive()) g.drawString(p.getName() + ": " + p.HP() + " HP", x, y + 1);
+    			else g.drawString(p.getName() + " (DEAD)", x, y);
+    			y+=15;
+    		}
     		
-    		if(p.isAlive()) g.drawString(p.getName() + " has " + p.HP() + " health points.", x, y);
-    		else g.drawString(p.getName() + " (DEAD)", x, y);
-    		y+=15;
     	}
     	
-    	y+=15;
-    	g.clearRect(x - 1, y, w, h + (15 * (console.size() - 1)));
-    	y+=15;
+    	y = temp;
+    	g.clearRect(x + 109, y - 10, 100, 20 + (10 * (team2.length)));
+    	
+    	for(Permanent p : team2){
+    		if(p != null){
+    			if(p.isAlive()) g.drawString(p.getName() + ": " + p.HP() + " HP", x + 110, y + 1);
+    			else g.drawString(p.getName() + " (DEAD)", x, y);
+    			y+=15;
+    		}
+    	}
+   
+    	
+    	//messages
+    	
+    	g.clearRect(x - 1, 300, w, 15 + (15 * (console.size() - 1)));
+    	
+    	y = 1;
     	
     	for(String s : console) {
-    		g.drawString(s, x, y);
-    		y+=15;
+    		g.drawString(s, x, 296 + (15 * y));
+    		y+=1;
     	}
     }
     
