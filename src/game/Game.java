@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.LinkedList;
 import java.awt.event.*;
 
 public class Game extends JPanel {
@@ -31,19 +32,22 @@ public class Game extends JPanel {
     private Permanent cur; //unit whose turn it is
     private Tile[][] grid;
     private Hashtable<Integer, Boolean> marked;
+    private final Permanent[] allFighters;
     
-    public Game(Tile[][] arr, Iterable<Permanent> team1, Iterable<Permanent> team2) {
+    public Game(Tile[][] arr, LinkedList<Permanent> team1, LinkedList<Permanent> team2) {
 
     	grid = Arrays.copyOf(arr, arr.length);
     	marked = new Hashtable<Integer, Boolean>();
     	console = new ArrayDeque<String>();
     	units = new ArrayDeque<Permanent>();
+    	allFighters = new Permanent[team1.size() * team2.size()];
     	
     	int i = 1;
     	for(Permanent p : team1) {
     		
     		p.setPosition(1, 2 + (4 * i));
     		p.setTeam(1);
+    		allFighters[i] = p;
     		units.add(p);
     		i++;
     		
@@ -53,6 +57,7 @@ public class Game extends JPanel {
     		
     		p.setPosition(width() - 2, 2 + (4 * i));
     		p.setTeam(2);
+    		allFighters[i + (team1.size() - 1)] = p;
     		units.add(p);
     		i++;
     		
@@ -306,19 +311,22 @@ public class Game extends JPanel {
     	int y = 150;
     	int w = 240;
     	int h = 20;
+  
     	
     	g.clearRect(x - 1, y - 20, w, h);
     	g.drawString("It is " + cur.getName() + "'s turn, " + curTurnAP + " AP left", x, y - 5);
     	
     	y+=10;
     	
-    	g.clearRect(x - 1, y, w, h + (10 * (units.size() + 1)));
+    	g.clearRect(x - 1, y, w, h + (10 * (allFighters.length + 1)));
     	g.setColor(Color.BLACK);
     	
     	y+=10;
     	
-    	for(Permanent p : units){
-    		g.drawString(p.getName() + " has " + p.HP() + " health points.", x, y);
+    	for(Permanent p : allFighters){
+    		
+    		if(p.isAlive()) g.drawString(p.getName() + " has " + p.HP() + " health points.", x, y);
+    		else g.drawString(p.getName() + " (DEAD)", x, y);
     		y+=15;
     	}
     	
