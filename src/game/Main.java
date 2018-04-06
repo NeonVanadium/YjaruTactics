@@ -37,6 +37,18 @@ public class Main {
 			
 		}
 		
+		for(int i = 0; i < grid.length / 2; i++) {
+			
+			if(i != 4) grid[i][grid[0].length - 5] = new Tile(i, 7, true);
+			
+		}
+		
+		for(int i = 7; i < grid[0].length - 4; i++) {
+			
+			if(i != 10) grid[grid.length / 2][i] = new Tile(i, 7, true);
+			
+		}
+		
 		
 		fighters.put(1, new Permanent("NATHANIEL", Color.GREEN));
     	fighters.put(2, new Permanent("SERAILA", Color.CYAN));
@@ -44,17 +56,18 @@ public class Main {
     	fighters.put(4, new Permanent("CATHERINE", Color.BLACK));
     	fighters.put(5, new Permanent("WILLIAM", Color.DARK_GRAY));
     	fighters.put(6, new Permanent("JAREN", Color.PINK));
+    	fighters.put(7, new Permanent("MORTEN", Color.MAGENTA));
+    	
     	
     	LinkedList<Permanent> t1 = new LinkedList<Permanent>(), t2 = new LinkedList<Permanent>();
     	
     	t1.add(fighters.get(1));
     	t1.add(fighters.get(2));
     	t1.add(fighters.get(3));
+    	t1.add(fighters.get(7));
     	t2.add(fighters.get(4));
     	t2.add(fighters.get(5));
     	t2.add(fighters.get(6));
-    	
-    	
 		
 		Game g = new Game(grid, t1, t2);
 		g.setBackground(Color.BLACK);

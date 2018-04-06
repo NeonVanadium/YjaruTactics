@@ -33,9 +33,10 @@ public class Game extends JPanel {
     private Permanent cur; //unit whose turn it is
     private Tile[][] grid;
     private Hashtable<Integer, Boolean> marked;
-    //private final Permanent[] allFighters; //TODO create two separate arrays for each team.
     private final Permanent[] team1;
     private final Permanent[] team2;
+    private int living1; //number of living units on team one
+    private int living2; //number of living units on team two
     
     public Game(Tile[][] arr, LinkedList<Permanent> team1, LinkedList<Permanent> team2) {
 
@@ -43,16 +44,17 @@ public class Game extends JPanel {
     	marked = new Hashtable<Integer, Boolean>();
     	console = new ArrayDeque<String>();
     	units = new ArrayDeque<Permanent>();
-    	//allFighters = new Permanent[team1.size() + team2.size()];
     	this.team1 = new Permanent[team1.size()];
     	this.team2 = new Permanent[team2.size()];
+    	living1 = this.team1.length;
+    	living2 = this.team2.length;
+    	
     	
     	int i = 0;
     	for(Permanent p : team1) {
     		
-    		p.setPosition(1, 2 + (4 * (i + 1)));
+    		p.setPosition(1, 2 + (height() / living1) * i);
     		p.setTeam(1);
-    		//allFighters[i] = p;
     		this.team1[i] = p;
     		units.add(p);
     		i++;
@@ -61,7 +63,7 @@ public class Game extends JPanel {
     	i = 0;
     	for(Permanent p : team2) {
     		
-    		p.setPosition(width() - 2, 2 + (4 * (i + 1)));
+    		p.setPosition(width() - 2, 2 + (height() / living2) * i);
     		p.setTeam(2);
     		//allFighters[i + (team1.size())] = p;
     		this.team2[i] = p;
@@ -149,11 +151,11 @@ public class Game extends JPanel {
     
     public void toConsole(String s) { //adds nonempty string s to virtual console for display
     	
-    	//if(s.isEmpty()) return;
+    	if(s.isEmpty()) return;
     	
     	console.addFirst(s);
     	
-    	if(console.size() > 10) console.removeLast();
+    	if(console.size() > 30) console.removeLast();
     	
     }
     
@@ -318,46 +320,43 @@ public class Game extends JPanel {
     private void info(Graphics g) {//TODO
     	
     	int x = 1010;
-    	int y = 150;
-    	int w = 240;
-  
-    	new Font("Fonts/arial.tff", 100, 10);
+    	int y = 40;
+    	int w = 240; 
     	
-    	g.setFont(new Font("Fonts/arial.tff", 100, 10).deriveFont(100));
+    	g.setFont(new Font("Fonts/arial.tff", 10, 20));
     	
     	//TOP
-    	g.clearRect(x - 1, 130, 210, 20);
+    	g.clearRect(x - 1, 10, 400, 980);
     	g.drawString("It is " + cur.getName() + "'s turn, " + curTurnAP + " AP left", x, y - 5);
     	//END TOP
     	
     	//TEAM BOXES
-    	y += 10;
     	
     	g.setColor(Color.BLACK);
     	
-    	y+=10;
-    	int temp = y;
+    	y = 100;
+    	int temp = 100;
     	
     	//TEAM 1
-    	g.clearRect(x - 1, y - 10, 100, 20 + (10 * (team1.length)));
+    	//g.clearRect(x - 1, y - 10, 100, 20 + (10 * (team1.length)));
     	
     	for(Permanent p : team1){
     		if(p != null){
     			if(p.isAlive()) g.drawString(p.getName() + ": " + p.HP() + " HP", x, y + 1);
     			else g.drawString(p.getName() + " (DEAD)", x, y);
-    			y+=15;
+    			y+=25;
     		}
     		
     	}
     	
     	y = temp;
-    	g.clearRect(x + 109, y - 10, 100, 20 + (10 * (team2.length)));
+    	//g.clearRect(x + 109, y - 10, 100, 20 + (10 * (team2.length)));
     	
     	for(Permanent p : team2){
     		if(p != null){
-    			if(p.isAlive()) g.drawString(p.getName() + ": " + p.HP() + " HP", x + 110, y + 1);
+    			if(p.isAlive()) g.drawString(p.getName() + ": " + p.HP() + " HP", x + 200, y + 1);
     			else g.drawString(p.getName() + " (DEAD)", x, y);
-    			y+=15;
+    			y+=25;
     		}
     	}
    
@@ -369,9 +368,10 @@ public class Game extends JPanel {
     	y = 1;
     	
     	for(String s : console) {
-    		g.drawString(s, x, 296 + (15 * y));
-    		y+=1;
+    		g.drawString(s, x, 200 + (25 * y));
+    		y += 1;
     	}
+    	
     }
     
     private void drawPermanents(Graphics g) {
