@@ -74,6 +74,13 @@ public class Main {
 		f.add(g);
 		f.setVisible(true);
 		
+		int num = 0;
+		while(g.isEnabled()){
+			
+			//g.draw();
+			
+		}
+		
 		
 	}
 

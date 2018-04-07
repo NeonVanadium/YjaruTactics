@@ -37,6 +37,7 @@ public class Game extends JPanel {
     private final Permanent[] team2;
     private int living1; //number of living units on team one
     private int living2; //number of living units on team two
+    protected boolean over = false;
     
     public Game(Tile[][] arr, LinkedList<Permanent> team1, LinkedList<Permanent> team2) {
 
@@ -167,9 +168,15 @@ public class Game extends JPanel {
     		
     		grid[p.y()][p.x()].remove();
     		
+    		if(p.getTeam() == 1) living1 -= 1;
+    		else living2 -= 1;
+    		
+    		checkWin();
     		return true;
     		
     	}
+    	
+    	checkWin();
     	
     	return false;
 
@@ -193,12 +200,34 @@ public class Game extends JPanel {
     	return grid[row][col];
     	
     }
-		
+	
+    public void draw(){
+    	
+    	drawGrid(getGraphics());
+    	
+    }
+    
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
 		drawGrid(g);
 			
+	}
+	
+	private void checkWin(){
+		
+		if(living1 <= 0){
+			setEnabled(false);
+			setVisible(false);
+			System.out.println("TEAM 2 WINS");
+		}
+		if(living2 <= 0){
+			setEnabled(false);
+			setVisible(false);
+			
+			System.out.println("TEAM 1 WINS");
+		}
+		
 	}
 	
 	private void mouseClickInfo(int x, int y) {
@@ -290,6 +319,8 @@ public class Game extends JPanel {
     }
     
     private void drawGrid(Graphics g) {
+    	
+    	//if(over) this.setEnabled(false);
     	
     	//turnCheck();
     	
