@@ -2,12 +2,17 @@ package game;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 public class Permanent {
 	
 	private int x; //x-coordinate of position
 	private int y; //y-coordinate of position
-	private int hp = 2; //health points
+	private int hp = 20; //health points
 	private int team; //one or two
 	private String name; 
 	private int prevX;
@@ -16,7 +21,8 @@ public class Permanent {
 	private boolean isMovable = true; //can this object be moved
 	private boolean immortal = false; //can this object be destroyed
 	private boolean solid = true; //is this object solid (does it make the occupied tile impassable)
-	//private Picture sprite;
+	private BufferedImage[] frames;
+	private int curFrame = 0; //0-face, 1-rightfacing, 2-back, 3-leftfacing
 	
 	public class Attack{
 		
@@ -37,21 +43,41 @@ public class Permanent {
 		
 	}
 	
-	protected Color c; //temporary for testing
-	
-	public Permanent(String name, Color c) {
+	public Permanent(String name, String spritesheet, int w, int h) {
 		
 		this.name = name;
-		this.c = c;
+		
+		frames = new BufferedImage[4];
+		
+		for(int i = 0; i < 4; i++) {
+			
+			try {
+				frames[i] = ImageIO.read(new File(spritesheet)).getSubimage(w * i, 0, w, h);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+		}
 		
 	}
 	
-	public void enter(int row, int col){
+	public BufferedImage getSprite() {
 		
-		prevX = x;
-		prevY = y;
-		x = row;
-		y = col;
+		return frames[curFrame];
+		
+	}
+	
+	public void enter(int x, int y){
+		
+		if(x < this.x) curFrame = 3;
+		if(x > this.x) curFrame = 1;
+		if(y < this.y) curFrame = 2;
+		if(y > this.y) curFrame = 0;
+		
+		prevX = this.x;
+		prevY = this.y;
+		this.x = x;
+		this.y = y;
 		
 	}
 	
@@ -59,11 +85,9 @@ public class Permanent {
 		
 		if(p.getTeam() == team) return "";
 		
-		int damage = 1;
+		int damage = (int) ((Math.random() * 10) + 1);
 		
 		p.changeHealth(-damage);
-		
-		
 		
 		return name + " swings for " + damage + " on " + p.getName() + ".";
 		
@@ -88,6 +112,14 @@ public class Permanent {
 		
 		if(Math.abs(this.x - other.x) == 1 ||  Math.abs(this.y - other.y) == 1) return true;
 		return false;
+		
+	}
+	
+	public void setFacing(int direction) {
+		
+		if(direction < 0 || direction > 3) return;
+		
+		curFrame = direction;
 		
 	}
 	

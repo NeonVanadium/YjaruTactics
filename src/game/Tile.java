@@ -1,18 +1,30 @@
 package game;
 
+import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
 public class Tile {
 	
 	private Permanent occupier = null; //the permanent, if any, that is on this tile
 	private boolean impassable = false;
 	private final int x;
 	private final int y;
-	//private Picture sprite;
+	private Image sprite;
 	
-	public Tile(int row, int col, boolean impassable){
+	public Tile(int row, int col, String spritepath, boolean impassable){
 		
 		this.x = col;
 		this.y = row;
 		this.impassable = impassable;
+		
+		try {
+			sprite = ImageIO.read(new File(spritepath));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 	}
 	
@@ -36,6 +48,8 @@ public class Tile {
 		return true;
 		
 	}
+	
+	public Image getSprite() { return sprite; } 
 	
 	public Permanent occupier(){ return occupier; }
 	
