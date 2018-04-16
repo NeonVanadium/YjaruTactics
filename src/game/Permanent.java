@@ -1,49 +1,35 @@
 package game;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
 import java.io.File;
 import java.io.IOException;
+import java.util.Hashtable;
 
 import javax.imageio.ImageIO;
 
-public class Permanent {
+public class Permanent implements Comparable<String>{
 	
 	private int x; //x-coordinate of position
 	private int y; //y-coordinate of position
-	private int hp = 20; //health points
+	private int hp = 10; //health points
+	private int dex = 5;
 	private int team; //one or two
-	private String name; 
 	private int prevX;
 	private int prevY;
 	private int ap = 5; //action points
+	private int curFrame = 0; //0-face, 1-rightfacing, 2-back, 3-leftfacing
+	private String name; //name of the permanent
 	private boolean isMovable = true; //can this object be moved
 	private boolean immortal = false; //can this object be destroyed
 	private boolean solid = true; //is this object solid (does it make the occupied tile impassable)
 	private BufferedImage[] frames;
-	private int curFrame = 0; //0-face, 1-rightfacing, 2-back, 3-leftfacing
+	private Attack[] attacks;
 	
-	public class Attack{
-		
-		private String name;
-		private int cost;
-		private int damage; //damage dealt to all non-immortal permanents in area of effect
-		private int width; //the width of the area of effect
-		private int height; //the height of the area of effect
-		
-		public Attack(String name, int damage, int width, int height){
-			
-			this.name = name;
-			this.damage = damage;
-			this.width = width;
-			this.height = width;
-			
-		}
-		
-	}
-	
-	public Permanent(String name, String spritesheet, int w, int h) {
+	public Permanent(String name, String spritesheet, int w, int h) { //TODO eventually remove
 		
 		this.name = name;
 		
@@ -59,7 +45,38 @@ public class Permanent {
 			
 		}
 		
+		attacks = new Attack[] { Main.getAttacks().get(0) };
+		
 	}
+	
+	public Permanent(String name, String spritesheet, int w, int h, int[] attacks) {
+		
+		this.name = name;
+		
+		frames = new BufferedImage[4];
+		
+		for(int i = 0; i < 4; i++) {
+			
+			try {
+				frames[i] = ImageIO.read(new File(spritesheet)).getSubimage(w * i, 0, w, h);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+		}
+		
+		this.attacks = new Attack[attacks.length];
+		Hashtable<Integer, Attack> attackTable = Main.getAttacks();
+		
+		for(int i = 0; i < attacks.length; i++) {
+			
+			this.attacks[i] = attackTable.get(attacks[i]);
+			
+		}
+		
+	}
+	
+	public BufferedImage getFrame(int i) { return frames[i]; }
 	
 	public BufferedImage getSprite() {
 		
@@ -81,17 +98,71 @@ public class Permanent {
 		
 	}
 	
-	public String attack(Permanent p){
+	public String attack(Permanent p){ //basic attacks
+		
+		return attack(attacks[0], p);
+	
+	}
+	
+	public String attack(Attack a, Permanent p) {
 		
 		if(p.getTeam() == team) return "";
 		
-		int damage = (int) ((Math.random() * 10) + 1);
+		
+		
+		int damage = 0;
+		
+		if(a.times() == 1) {
+			
+			if((int) (Math.random() * 5) == 0) { //should be a 1/dex chance of missing. TODO confirm this
+				
+				return name + ": Miss.";
+				
+			}
+			
+			if(a.didCrit()) {
+				
+				Main.getGame().toConsole("<<<CRIT>>>", Color.RED);
+				damage = 2 * a.damageRoll();
+				
+			}
+			
+			damage = a.damageRoll();
+			
+		}
+		else {
+			
+			int total = 0;
+			int numCrits = 0;
+			
+			for(int i = 0; i < a.times(); i++) {
+				
+				if(a.didCrit()) {
+					
+					total += 2 * a.damageRoll();
+					numCrits += 1;
+					
+				}
+				
+				total += a.damageRoll();
+				
+			}
+			
+			if(numCrits > 0) Main.getGame().toConsole("<<<CRIT x" + numCrits + ">>>", Color.RED);
+
+			damage = total;
+
+		}
 		
 		p.changeHealth(-damage);
 		
-		return name + " swings for " + damage + " on " + p.getName() + ".";
+		return name + ": " + a.name().toUpperCase() + " for " + damage + " on " + p.getName() + ".";
 		
 	}
+	
+	public Attack[] getAttacks() { return attacks; }
+	
+	public int getFacing() { return curFrame; }
 	
 	public boolean changeHealth(int change){
 		
@@ -132,6 +203,57 @@ public class Permanent {
 		
 	}
 	
+	public int scaleWidth(int scale) {
+		
+		return scaleWidth(curFrame, scale);
+		
+	}
+	
+	public int scaleHeight(int scale) {
+		
+		return scaleHeight(curFrame, scale);
+		
+	}
+	
+	public int scaleWidth(int dir, int scale) {
+		
+		if(dir == 0 || dir == 2) {
+			
+			return frames[dir].getWidth() * scale;
+			
+		}
+		else if(dir == 1 || dir == 3) {
+			
+			return (frames[dir].getWidth()) * scale;
+			
+		}
+		
+		return 0;
+		
+	}
+	
+	public int scaleHeight(int dir, int scale) {
+		
+		return frames[dir].getHeight() * scale;
+		
+	}
+	
+	public void compensatedDraw(int dir, int scale, int x, int y, Graphics g, ImageObserver o) {
+		
+		y -= scale * (frames[dir].getHeight() - 34);
+		//x -= scale * (frames[dir].getWidth() - 11);
+		
+		
+		g.drawImage(frames[dir], x, y, scaleWidth(dir, scale), scaleHeight(dir, scale), o);
+		
+	}
+	
+	public void compensatedDraw(int scale, int x, int y, Graphics g, ImageObserver o) {
+		
+		compensatedDraw(curFrame, scale, x, y, g, o);
+		
+	}
+	
 	public void setTeam(int team) {
 		
 		this.team = team;
@@ -164,7 +286,13 @@ public class Permanent {
 	
 	public boolean isImmortal() { return immortal; }
 	
-	public boolean isSolid() { return solid; };
+	public boolean isSolid() { return solid; }
+
+	public int compareTo(String arg0) {
+		
+		return name.compareTo(arg0);
+		
+	};
 	
 
 }
