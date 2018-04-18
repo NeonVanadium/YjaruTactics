@@ -1,6 +1,5 @@
 package game;
 
-import java.awt.Color;
 import java.awt.Rectangle;
 
 public class Ability{//TODO change to ability

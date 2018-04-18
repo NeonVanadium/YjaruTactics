@@ -87,24 +87,24 @@ public class Main {
 	
 	private static void initFighters() {
 		
-		fighters.put("Nathaniel Jathien", new Permanent("NATHANIEL", "Sprites/Nathaniel.png", 13, 34, new int[] { 4, 1 }));
-    	fighters.put("Seraila Endall", new Permanent("SERAILA", "Sprites/Seraila.png", 11, 34));
+		fighters.put("Nathaniel Jathien", new Permanent("NATHANIEL", "Sprites/Nathaniel.png", 13, 34, new int[] { 0, 4 }));
+    	fighters.put("Seraila Endall", new Permanent("SERAILA", "Sprites/Seraila.png", 11, 34, new int[] { 0, 5 }));
     	fighters.put("Claio Eade-il Doras III", new Permanent("CLAIO III", "Sprites/Claio III.png", 11, 34, new int[] { 1 }));
-    	fighters.put("Claio Eade-il Doras I", new Permanent("CLAIO I", "Sprites/Claio I.png", 11, 34));
+    	fighters.put("Claio Eade-il Doras I", new Permanent("CLAIO I", "Sprites/Claio I.png", 11, 34, new int[] { 0 }));
     	fighters.put("Catherine (Adult)", new Permanent("CATHERINE", "Sprites/Catherine.png", 11, 33, new int[]{ 3 }));
     	fighters.put("Catherine (Kid)", new Permanent("CAT (STREET)", "Sprites/Catherine (Street Kid).png", 9, 29, new int[]{ 3 }));
-    	fighters.put("Catherine (After FotHoM)", new Permanent("CAT (KID)", "Sprites/Catherine (Kid).png", 11, 30));
+    	fighters.put("Catherine (After FotHoM)", new Permanent("CAT (KID)", "Sprites/Catherine (Kid).png", 11, 30, new int[] { 0 }));
     	fighters.put("William Mayden", new Permanent("WILLIAM", "Sprites/William.png", 13, 35, new int[]{ 2 } ));
     	fighters.put("Gedirong \"Jaren\" Illiston", new Permanent("JAREN", "Sprites/Jaren.png", 13, 34, new int[]{ 3 }));
-    	fighters.put("High Possessor Kanos", new Permanent("KANOS", "Sprites/Kanos.png", 11, 35));
-    	fighters.put("Morten Yol", new Permanent("MORTEN", "Sprites/Morten.png", 13, 35));
+    	fighters.put("High Possessor Kanos", new Permanent("KANOS", "Sprites/Kanos.png", 11, 35, new int[] { 0 }));
+    	fighters.put("Morten Yol", new Permanent("MORTEN", "Sprites/Morten.png", 13, 35, new int[] { 0 }));
     	fighters.put("Gael m'Ziilki", new Permanent("GAEL", "Sprites/Gael.png", 11, 34, new int[]{ 3 }));
     	fighters.put("The Burned Mage", new Permanent("GAEL (BURNED)", "Sprites/Gael (Burned).png", 11, 34, new int[]{ 3 }));
     	fighters.put("Daniel Bocaild", new Permanent("DANIEL", "Sprites/Daniel.png", 11, 34, new int[]{ 3 }));
-    	fighters.put("High Assassin Caerzel", new Permanent("CAERZEL", "Sprites/Caerzel.png", 11, 35));
+    	fighters.put("High Assassin Caerzel", new Permanent("CAERZEL", "Sprites/Caerzel.png", 11, 35, new int[] { 0 }));
     	fighters.put("Andus Uwren", new Permanent("ANDUS", "Sprites/Andus.png", 11, 35, new int[]{ 3 }));
-    	fighters.put("Seamus", new Permanent("SEAMUS", "Sprites/Seamus.png", 11, 34));
-    	fighters.put("Tara", new Permanent("TARA", "Sprites/Tara.png", 11, 33));
+    	fighters.put("Seamus", new Permanent("SEAMUS", "Sprites/Seamus.png", 11, 34, new int[] { 0  }));
+    	fighters.put("Tara", new Permanent("TARA", "Sprites/Tara.png", 11, 33, new int[] { 0 }));
 	}
 	
 	private static void initBoards() {
@@ -148,6 +148,7 @@ public class Main {
 		abilities.put(2, new Ability("Bash", 8, 4, 1, -1, 3, 1, 0)); //high, consistent damage 4-8, but will never crit
 		abilities.put(3, new Ability("Mana bolt", 5, 1, 1, 5, 1, 3, 0)); //cheap attack 1-5, with range
 		abilities.put(4, new Ability("Heal Ally", -6, -1, 1, 5, 1, 3, 2)); //healy boi
+		abilities.put(5, new Ability("Banshee Ball", 12, 3, 5, 5, 1, 4, 0)); //cheap attack 1-5, with range
 		
 	}
 	

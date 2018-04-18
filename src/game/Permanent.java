@@ -20,7 +20,7 @@ public class Permanent implements Comparable<String>{
 	private int team; //one or two
 	private int prevX;
 	private int prevY;
-	private int ap = 5; //action points
+	private final int ap = 5; //action points
 	private int curFrame = 0; //0-face, 1-rightfacing, 2-back, 3-leftfacing
 	private String name; //name of the permanent
 	private boolean isMovable = true; //can this object be moved
@@ -29,26 +29,6 @@ public class Permanent implements Comparable<String>{
 	private BufferedImage[] frames;
 	private Ability[] abilities;
 	private int curAbility;
-	
-	public Permanent(String name, String spritesheet, int w, int h) { //TODO eventually remove
-		
-		this.name = name;
-		
-		frames = new BufferedImage[4];
-		
-		for(int i = 0; i < 4; i++) {
-			
-			try {
-				frames[i] = ImageIO.read(new File(spritesheet)).getSubimage(w * i, 0, w, h);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			
-		}
-		
-		abilities = new Ability[] { Main.getAbilities().get(0) };
-		
-	}
 	
 	public Permanent(String name, String spritesheet, int w, int h, int[] abilities) {
 		
@@ -80,6 +60,8 @@ public class Permanent implements Comparable<String>{
 	public boolean canTarget(Permanent p){
 		
 		Ability a = abilities[curAbility];
+		
+		if(Main.getGame().getRemainingAP() < a.cost()) return false; //if the ability costs more action points than this permanent has availible
 		
 		if(distanceTo(p) > a.range()) return false;
 		
@@ -137,8 +119,11 @@ public class Permanent implements Comparable<String>{
 			
 			if(a.didCrit()) {
 				
-				Main.getGame().toConsole("<<<CRIT>>>", Color.RED);
+				
 				damage = 2 * a.damageRoll();
+				
+				if(damage > 0) Main.getGame().toConsole("<<<CRIT>>>", Color.RED);
+				if(damage < 0) Main.getGame().toConsole("<<<CRIT HEAL>>>", Color.GREEN);
 				
 			}
 			
@@ -175,6 +160,15 @@ public class Permanent implements Comparable<String>{
 		
 	}
 	
+	public boolean setCurAbility(int to) { 
+		
+		if(curAbility == to) return false;
+		
+		curAbility = to; 
+		return true;
+		
+	} 
+	
 	public Ability[] getAbilities() { return abilities; }
 	
 	public Ability getCurAbility() { return abilities[curAbility]; }
@@ -203,7 +197,7 @@ public class Permanent implements Comparable<String>{
 		
 	}
 	
-	public void setFacing(int direction) {
+	public void setFacing(int direction) { //TODO create a setFacing that takes a permanent and then faces in the direction of that permanent
 		
 		if(direction < 0 || direction > 3) return;
 		

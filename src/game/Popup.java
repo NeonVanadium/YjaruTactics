@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.util.LinkedList;
 
-public class Popup { //a popup menu
+public class Popup { //a popup menu, may be renamed to AbilityMenu or something like that
 	
 	private int x;
 	private int y;
@@ -81,7 +81,17 @@ public class Popup { //a popup menu
 			
 		}
 		
-		return false;
+		return true;
+		
+	}
+	
+	public int getOption(int y) {
+		
+		y = y - this.y - 40;
+		
+		if(y < 0) return -1; //clicked the title, no valid ability
+		return y / 20;
+		
 		
 	}
 	

@@ -105,7 +105,14 @@ public class Game extends JPanel {
     			}
     			else if(popup != null && popup.inRange(e.getX(), e.getY())){
     				
-    				System.out.println("test");//TODO fix
+    				int selection = popup.getOption(e.getY());
+
+    				if(selection >= 0 && cur.setCurAbility(popup.getOption(e.getY()))) {
+    					
+    					toConsole(cur.getName() + " readies " + cur.getCurAbility().name() + ".");
+    					popup = null;
+    					
+    				}
     				
     			}
     			else {
@@ -268,6 +275,8 @@ public class Game extends JPanel {
 		
 	}
 	
+	public int getRemainingAP() { return curTurnAP; }
+	
 	private void mouseClickInfo(int x, int y) {//displays information from the tile at row y and col x
 		
 		System.out.println("MOUSE CLICK: row " +  y + " col " + x);
@@ -282,7 +291,7 @@ public class Game extends JPanel {
 			units.addLast(units.removeFirst());
 			cur = units.getFirst();
 			curTurnAP = cur.getAP();
-			toConsole("------------------------");
+			toConsole("------------------------------------------------");
 			toConsole(cur.getName() + " begins their turn.");
 			drawGrid(getGraphics());
 			

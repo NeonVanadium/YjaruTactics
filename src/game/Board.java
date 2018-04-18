@@ -92,13 +92,20 @@ public class Board {
 			
 			for(int j = 0; j < width(); j++) {
 				
-				g.drawImage(getTile(i, j).getSprite(), (j * length()) + Xoffset, (i * length()) + Yoffset, length(), length(), observer);
+				g.drawImage(getTile(i, j).getSprite(), (j * length()) + Xoffset, Yoffset + (i * length()), length(), length(), observer);
 				
 			}
 			
 		}
 	
     }
+    
+    /*private int perspective(int i) { //returns perspective-compensated height of a tile at row i
+    	
+    	if(i == 0) return length - (length() / 2);
+     	return length()  - ((length() / 2) / (i));
+    	
+    }*/
     
 	public void range(int x, int y, int distance, Graphics g){
     	
@@ -124,7 +131,7 @@ public class Board {
     	
     	g.setColor(Color.CYAN);
     	
-    	g.drawRect((x * length) + Xoffset, (y * length) + Yoffset, length, length);
+    	g.drawRect((x * length) + Xoffset, (y * length) + Yoffset, length, length());
     	
     	rangeHelper(x - 1, y, distance - 1, g);
     	rangeHelper(x + 1, y, distance - 1, g);
