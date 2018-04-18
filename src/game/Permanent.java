@@ -27,7 +27,8 @@ public class Permanent implements Comparable<String>{
 	private boolean immortal = false; //can this object be destroyed
 	private boolean solid = true; //is this object solid (does it make the occupied tile impassable)
 	private BufferedImage[] frames;
-	private Attack[] attacks;
+	private Ability[] abilities;
+	private int curAbility;
 	
 	public Permanent(String name, String spritesheet, int w, int h) { //TODO eventually remove
 		
@@ -45,11 +46,11 @@ public class Permanent implements Comparable<String>{
 			
 		}
 		
-		attacks = new Attack[] { Main.getAttacks().get(0) };
+		abilities = new Ability[] { Main.getAbilities().get(0) };
 		
 	}
 	
-	public Permanent(String name, String spritesheet, int w, int h, int[] attacks) {
+	public Permanent(String name, String spritesheet, int w, int h, int[] abilities) {
 		
 		this.name = name;
 		
@@ -65,14 +66,30 @@ public class Permanent implements Comparable<String>{
 			
 		}
 		
-		this.attacks = new Attack[attacks.length];
-		Hashtable<Integer, Attack> attackTable = Main.getAttacks();
+		this.abilities = new Ability[abilities.length];
+		Hashtable<Integer, Ability> attackTable = Main.getAbilities();
 		
-		for(int i = 0; i < attacks.length; i++) {
+		for(int i = 0; i < abilities.length; i++) {
 			
-			this.attacks[i] = attackTable.get(attacks[i]);
+			this.abilities[i] = attackTable.get(abilities[i]);
 			
 		}
+		
+	}
+	
+	public boolean canTarget(Permanent p){
+		
+		Ability a = abilities[curAbility];
+		
+		if(distanceTo(p) > a.range()) return false;
+		
+		if(a.type() == 2 && p != this) return false; //if is a self-spell and target permanent is not the caster
+		
+		if(a.type() == 1 && p.getTeam() != this.getTeam()) return false; //if is a same-team spell and target permanent is not on the caster's team
+		
+		if(a.type() == 0 && p.getTeam() == this.getTeam()) return false; //if is a self-spell and target permanent is not on the other team
+		
+		return true;
 		
 	}
 	
@@ -100,15 +117,13 @@ public class Permanent implements Comparable<String>{
 	
 	public String attack(Permanent p){ //basic attacks
 		
-		return attack(attacks[0], p);
+		return use(abilities[curAbility], p);
 	
 	}
 	
-	public String attack(Attack a, Permanent p) {
+	public String use(Ability a, Permanent p) {
 		
-		if(p.getTeam() == team) return "";
-		
-		
+		//if(p.getTeam() == team) return ""; 
 		
 		int damage = 0;
 		
@@ -160,7 +175,9 @@ public class Permanent implements Comparable<String>{
 		
 	}
 	
-	public Attack[] getAttacks() { return attacks; }
+	public Ability[] getAbilities() { return abilities; }
+	
+	public Ability getCurAbility() { return abilities[curAbility]; }
 	
 	public int getFacing() { return curFrame; }
 	
@@ -193,6 +210,12 @@ public class Permanent implements Comparable<String>{
 		curFrame = direction;
 		
 	}
+	
+	public int distanceTo(Permanent other){
+    	
+    	return Math.abs(other.x() - x) + Math.abs(other.y() - y);
+    	
+    }
 	
 	public Point getPosition() { return new Point(x, y); }
 	

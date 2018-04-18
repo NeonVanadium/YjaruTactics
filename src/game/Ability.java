@@ -3,7 +3,7 @@ package game;
 import java.awt.Color;
 import java.awt.Rectangle;
 
-public class Attack{
+public class Ability{//TODO change to ability
 	
 	private String name;
 	private int cost; //cost (in AP) of the attack
@@ -13,9 +13,10 @@ public class Attack{
 	private int height; //the height of the area of effect
 	private int crit; // 1/crit is the chance to deal double damage (higher chance with lower value). If negative, crit impossible
 	private int times; //how many times this attack hits
-	private int range;
+	private int range; //the effective range of the attack
+	private int type; //0 = other, 1 = team, 2 = self;
 	
-	public Attack(String name, int high, int low, int cost, int critDenominator, int times, int range){ //single-target  attack
+	public Ability(String name, int high, int low, int cost, int critDenominator, int times, int range, int type){ //single-target  attack
 		
 		this.name = name;
 		this.high = high;
@@ -24,10 +25,11 @@ public class Attack{
 		this.times = times;
 		this.crit = critDenominator;
 		this.range = range;
+		this.type = type;
 		
 	}
 	
-	public Attack(String name, int high, int low, int cost, int critDenominator, int times, int range, int width, int height){ //non-single-target
+	public Ability(String name, int high, int low, int cost, int critDenominator, int times, int range, int type, int width, int height){ //non-single-target
 		
 		this.name = name;
 		this.high = high;
@@ -36,12 +38,15 @@ public class Attack{
 		this.times = times;
 		this.crit = critDenominator;
 		this.width = width;
+		this.type = type;
 		this.height = height;
 		this.range = range;
 		
 	}
 	
 	public String name() { return name; }
+	
+	public int type() { return type; }
 	
 	public int times() { return times; }
 	

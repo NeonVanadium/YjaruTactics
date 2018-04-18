@@ -2,24 +2,25 @@ package game;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.event.*;
 import java.util.Arrays;
 
 import javax.swing.JPanel;
 
-public class Menu extends JPanel {
+public class CharacterSelect extends JPanel {
 
 	private static final long serialVersionUID = -3729437235743046623L;
 	private Permanent[] fighters;
 	private String[] fullnames; //the full names of each fighter
 	private boolean[] taken;
+
 	
-	private static final int h = 350; //height scale of each fighter
-	private static final int w = 135; //width scale of each fighter
+	private static final int scale = 7;
+	private static final int h = 35 * scale; //height scale of each fighter
+	private static final int w = 13 * scale; //width scale of each fighter
 	private final int startX; //x value at which the first fighter in fighters[] is drawn
 	private final int startY; //y value at which the first fighter in fighters[] is drawn
-	private static final int spacing = 60; //blank space (x) between the fighters when drawn.
+	private static final int spacing = 80; //blank space (x) between the fighters when drawn.
 	private static final int Yspacing = 35;
 	private int dir = 0; //current direction the fighters are facing
 	private int prevDir = -1; //previous direction the fighters were facing
@@ -31,10 +32,10 @@ public class Menu extends JPanel {
 	
 	//TODO clean up this whole class
 
-	public Menu() {
+	public CharacterSelect() {
 		
 		fullnames = Main.getFighters().keySet().toArray(new String[0]);
-		
+
 		Arrays.sort(fullnames);
 		
 		fighters = new Permanent[fullnames.length];
@@ -50,7 +51,7 @@ public class Menu extends JPanel {
 		taken = new boolean[fighters.length];
 		
 		startX = Main.getFramewidth() / 2 - ((8 * (w + spacing)) / 2) + 10;
-		startY = Main.getFrameheight() / 2 - ((fighters.length / 9) * (h + Yspacing)); //make work for /8
+		startY = 100;//(Main.getFramewidth() - ((fighters.length / 9) * (h + Yspacing))) / 9; //make work for /8
 		
 		addMouseMotionListener( new MouseMotionAdapter(){
 			
@@ -114,7 +115,7 @@ public class Menu extends JPanel {
 			
 			Main.getTimer().cancel();
 			Main.getTimer().purge();
-			Main.removeFromFrame(Menu.this);
+			Main.removeFromFrame(CharacterSelect.this);
 			Main.endSelection();
 			
 		}
@@ -146,17 +147,17 @@ public class Menu extends JPanel {
 				
 				prevDir = dir;
 				
-				g.fillRect(startX, startY - 10, Main.getFramewidth(), 810); //TODO actuall calculate the height of the rect here and replace the dummy value
+				g.fillRect(startX, startY - 10, Main.getFramewidth(), 815); //TODO actuall calculate the height of the rect here and replace the dummy value
 				int i = 0;
 				
 				for(Permanent p : fighters) {
 					
 					//TODO make the scale here a variable on the class so future changes can be made with ease
-					p.compensatedDraw(dir, 10, (startX + ((w + spacing) * (i % 8))), startY + ((h + Yspacing) * (i / 8)), g, this);
+					p.compensatedDraw(dir, scale, (startX + ((w + spacing) * (i % 8))), startY + ((h + Yspacing) * (i / 8)), g, this);
 									
 					if(selection < fighters.length && selection > -1) {
 						g.setColor(Color.RED);
-						g.drawRect(startX + ((w + spacing) * (selection % 8)), -10 + startY + ((h + Yspacing) * (selection / 8)), w, h);
+						g.drawRect(startX + ((w + spacing) * (selection % 8)), -5 + startY + ((h + Yspacing) * (selection / 8)), w, h);
 						prevSelection = selection;	
 					}
 					
@@ -168,18 +169,18 @@ public class Menu extends JPanel {
 			}
 			if(isValidSelection()) {
 				
-				g.fillRect(startX, (startY + (2 * (h + Yspacing + Yspacing))) - 20, 400, 30); //the "selected" text
-				g.fillRect((startX + ((w + spacing) * (prevSelection % 8))), -10 + startY + ((h + Yspacing) * (prevSelection / 8)), w + 1, h + 1);
+				g.fillRect(startX, Main.getFrameheight() - startY - 20, 400, 30); //the "selected" text
+				g.fillRect((startX + ((w + spacing) * (prevSelection % 8))), -10 + startY + ((h + Yspacing) * (prevSelection / 8)), w + 1, h + 15);
 				
-				fighters[prevSelection].compensatedDraw(dir, 10, (startX + ((w + spacing) * (prevSelection % 8))), startY + ((h + Yspacing) * (prevSelection / 8)), g, this);
-				g.fillRect((startX + (w + spacing) * selection), startY, w+1, h+1);
-				fighters[selection].compensatedDraw(dir, 10, (startX + ((w + spacing) * (selection % 8))), startY + ((h + Yspacing) * (selection / 8)), g, this);
+				fighters[prevSelection].compensatedDraw(dir, scale, (startX + ((w + spacing) * (prevSelection % 8))), startY + ((h + Yspacing) * (prevSelection / 8)), g, this);
+				g.fillRect((startX + (w + spacing) * selection), startY, w, h);
+				fighters[selection].compensatedDraw(dir, scale, (startX + ((w + spacing) * (selection % 8))), startY + ((h + Yspacing) * (selection / 8)), g, this);
 
 				g.setColor(Color.RED);
-				g.drawRect(startX + ((w + spacing) * (selection % 8)), -10 + startY + ((h + Yspacing) * (selection / 8)), w, h);
+				g.drawRect(startX + ((w + spacing) * (selection % 8)), -5 + startY + ((h + Yspacing) * (selection / 8)), w, h);
 				
 				g.setColor(Color.WHITE);
-				g.drawString("Selected: " + fighters[selection].getName(), startX, (startY + (2 * (h + Yspacing + Yspacing))));
+				g.drawString("Selected: " + fighters[selection].getName(), startX, Main.getFrameheight() - startY);//(startY + (2 * (h + Yspacing + Yspacing))));
 				prevSelection = selection;
 				
 			}

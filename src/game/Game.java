@@ -99,9 +99,14 @@ public class Game extends JPanel {
     			
     			if(e.getButton() == 3 && popup == null) {	
     					
-    				popup = new Popup(e.getX(), e.getY(), cur.getName() + "'s moves:", cur.getAttacks());
+    				popup = new Popup(e.getX(), e.getY(), cur.getName() + "'s moves:", cur.getAbilities());
     						
     						
+    			}
+    			else if(popup != null && popup.inRange(e.getX(), e.getY())){
+    				
+    				System.out.println("test");//TODO fix
+    				
     			}
     			else {
     				
@@ -113,7 +118,7 @@ public class Game extends JPanel {
 	    			//mouseClickInfo(x, y);
 	    			
 	    			
-					if(tile.occupier() != null && tile.occupier().getTeam() != cur.getTeam() && tile.occupier().isAdjacentTo(cur)){ //if this is not cur's current location, this tile has an occupier, and that occupier is not the same team as the current unit
+					if(tile.occupier() != null && cur.canTarget(tile.occupier())){//&& tile.occupier().getTeam() != cur.getTeam() && cur.distanceTo(tile.occupier()) <= cur.getAttacks()[0].range()){ //if this is not cur's current location, this tile has an occupier, and that occupier is not the same team as the current unit
 					
 						String attack = cur.attack(tile.occupier());
 						
@@ -210,7 +215,7 @@ public class Game extends JPanel {
     		
     		units.remove(p);
     		
-    		board.getTile(p.y(), p.x());
+    		board.getTile(p.y(), p.x()).remove();
     		
     		if(p.getTeam() == 1) living1 -= 1;
     		else living2 -= 1;
@@ -302,7 +307,7 @@ public class Game extends JPanel {
     
     private void info(Graphics g) {//TODO
     	
-    	int x = board.Xoffset() - 400;//+ board.width() * board.length() + 10;
+    	int x = board.Xoffset() - 500;//+ board.width() * board.length() + 10;
     	int y = board.Yoffset() + 20;
     	
     	g.setFont(new Font("Fonts/arial.tff", 10, 20));
@@ -363,7 +368,7 @@ public class Game extends JPanel {
         	if(cur.x() == p.x() && cur.y() == p.y()) g.setColor(Color.WHITE);
         	else if(p.getTeam() != cur.getTeam()) {
         			
-        		if(cur.isAdjacentTo(p)) g.setColor(Color.RED);
+        		if(/*cur.isAdjacentTo(p)*/cur.distanceTo(p) <= cur.getCurAbility().range()) g.setColor(Color.RED);
         		else g.setColor(new Color(255, 100, 100));
         			
         			

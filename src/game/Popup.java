@@ -8,6 +8,8 @@ public class Popup { //a popup menu
 	
 	private int x;
 	private int y;
+	private static final int width = 300;
+	private int height;
 	private String title;
 	private LinkedList<String> options;
 	
@@ -20,14 +22,14 @@ public class Popup { //a popup menu
 		
 	}
 	
-	public Popup(int x, int y, String title, Attack[] attacks) {
+	public Popup(int x, int y, String title, Ability[] abilities) {
 		
 		this.x = x;
 		this.y = y;
 		this.title = title;
 		options = new LinkedList<String>();
 		
-		for(Attack a : attacks) {
+		for(Ability a : abilities) {
 			
 			options.add(a.name());
 			
@@ -46,7 +48,8 @@ public class Popup { //a popup menu
 	public void draw(Graphics g) {
 		
 		g.setColor(Color.LIGHT_GRAY);
-		g.fillRect(x, y, 300, 40 + (20 * options.size()));
+		height = 40 + (20 * options.size()); //not including the title/banner
+		g.fillRect(x, y, width, 40 + (20 * options.size()));
 		
 		g.setColor(Color.BLACK);
 		g.setFont(g.getFont().deriveFont(30F));
@@ -60,6 +63,25 @@ public class Popup { //a popup menu
 			i++;
 			
 		}
+		
+	}
+	
+	public boolean inRange(int x, int y){ //is this point inside the area of the popup?
+		
+		if(x < this.x || x > this.x + width){
+			
+			System.out.println("Exited on x");
+			return false;
+			
+		}
+		if(y < this.y || y > this.y + height){
+			
+			System.out.println("Exited on y");
+			return false;
+			
+		}
+		
+		return false;
 		
 	}
 	
