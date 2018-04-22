@@ -4,12 +4,15 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Rectangle;
+
 import javax.swing.JPanel;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 
@@ -93,6 +96,23 @@ public class Game extends JPanel {
     		
     	}
     	
+    	
+    	/*addKeyListener(new KeyAdapter(){
+    		
+    		public void keyPressed(KeyEvent e){
+    			
+    			System.out.println("TEST");
+    			if(e.getKeyChar() == ' '){
+    				
+    				curTurnAP = 0;
+    				checkTurn();
+    				
+    			}
+    			
+    		}
+    		
+    	});*/
+    	
     	addMouseListener(new MouseAdapter() {
     		
     		public void mousePressed(MouseEvent e) {
@@ -124,9 +144,39 @@ public class Game extends JPanel {
 	    			
 	    			//mouseClickInfo(x, y);
 	    			
-	    			
-					if(tile.occupier() != null && cur.canTarget(tile.occupier())){//&& tile.occupier().getTeam() != cur.getTeam() && cur.distanceTo(tile.occupier()) <= cur.getAttacks()[0].range()){ //if this is not cur's current location, this tile has an occupier, and that occupier is not the same team as the current unit
+	    			if(x == cur.x() && y == cur.y()){
+	    				
+	    				curTurnAP = 0;
+	    				checkTurn();
+	    				
+	    			}
+	    			else if(tile.occupier() != null && cur.canTarget(tile.occupier())){//&& tile.occupier().getTeam() != cur.getTeam() && cur.distanceTo(tile.occupier()) <= cur.getAttacks()[0].range()){ //if this is not cur's current location, this tile has an occupier, and that occupier is not the same team as the current unit
 					
+						Rectangle area = new Rectangle(0, 0, 0, 0);
+						cur.face(tile.occupier());
+						
+						if(cur.getCurAbility().isAOE()){
+							
+							System.out.println("AOE");
+							area = cur.getCurAbility().area(cur);
+							
+						}
+						
+						popup = new Popup(board.Xoffset() + (x + area.x) * board.length(), board.Yoffset() + (y + area.y) * board.length(), "AOE TEST", cur.getAbilities());
+						
+						//TODO finalize the code to get all the permanents in area, then move to its own method on probably the board class.
+						for(int i = y + area.y; i < y + area.y + area.height + area.y; i++){
+							
+							for(int j = x + area.x; j < x + area.x + area.width + area.x; j++){
+								
+								if(i > -1 && i < board.height() && j > -1 && j < board.width()) System.out.println(board.getTile(i, j).occupier());
+								else System.out.println(i + " " + j + " no return.");
+								
+								
+							}
+							
+						}
+						
 						String attack = cur.attack(tile.occupier());
 						
 						if(!attack.isEmpty()) {
@@ -367,6 +417,14 @@ public class Game extends JPanel {
     private void drawPermanents(Graphics g) {
     	
     	BufferedImage sprite;
+    	
+    	/*PriorityQueue<Permanent> drawOrder = new PriorityQueue<Permanent>();
+    	Sort permanents by height and print
+    	for(Permanent p : units){
+    		
+    		drawOrder.add(p);
+    		
+    	}*/
     	
     	for(Permanent p : units) {
     		

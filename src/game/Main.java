@@ -2,16 +2,12 @@ package game;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.util.Collection;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 public class Main {
 	
@@ -22,7 +18,7 @@ public class Main {
 	private static JFrame f = new JFrame();
 	private static LinkedList<Permanent> t1 = new LinkedList<Permanent>(), t2 = new LinkedList<Permanent>();
 	private static Timer t = new Timer();
-	private static boolean testMode = true;
+	protected static boolean testMode = true;
 	
 	@SuppressWarnings("static-access")
 	public static void main(String[] args) {
@@ -75,7 +71,7 @@ public class Main {
 			t1.add(fighters.get("Nathaniel Jathien"));
 			t1.add(fighters.get("Seraila Endall"));
 			t1.add(fighters.get("Claio Eade-il Doras III"));
-			t2.add(fighters.get("Gael m'Ziilki"));
+			t2.add(fighters.get("William Mayden"));
 			t2.add(fighters.get("Daniel Bocaild"));
 			t2.add(fighters.get("Catherine (Adult)"));
 			
@@ -94,7 +90,7 @@ public class Main {
     	fighters.put("Catherine (Adult)", new Permanent("CATHERINE", "Sprites/Catherine.png", 11, 33, new int[]{ 3 }));
     	fighters.put("Catherine (Kid)", new Permanent("CAT (STREET)", "Sprites/Catherine (Street Kid).png", 9, 29, new int[]{ 3 }));
     	fighters.put("Catherine (After FotHoM)", new Permanent("CAT (KID)", "Sprites/Catherine (Kid).png", 11, 30, new int[] { 0 }));
-    	fighters.put("William Mayden", new Permanent("WILLIAM", "Sprites/William.png", 13, 35, new int[]{ 2 } ));
+    	fighters.put("William Mayden", new Permanent("WILLIAM", "Sprites/William.png", 13, 35, new int[]{ 2, 6 } ));
     	fighters.put("Gedirong \"Jaren\" Illiston", new Permanent("JAREN", "Sprites/Jaren.png", 13, 34, new int[]{ 3 }));
     	fighters.put("High Possessor Kanos", new Permanent("KANOS", "Sprites/Kanos.png", 11, 35, new int[] { 0 }));
     	fighters.put("Morten Yol", new Permanent("MORTEN", "Sprites/Morten.png", 13, 35, new int[] { 0 }));
@@ -141,14 +137,19 @@ public class Main {
 		
 		abilities = new Hashtable<Integer, Ability>();
 		
-		//String name, int high, int low, int cost, int critDenominator, int times, int range
+		//single-target
+		//String name, int high, int low, int cost, int critDenominator, int times, int range, int type
+		
+		//area
+		//String name, int high, int low, int cost, int critDenominator, int times, int range, int type, int rectX, int rectY, int width, int height
 		
 		abilities.put(0, new Ability("Swing", 10, 1, 1, 5, 1, 1, 0)); //basic attack 1-10
 		abilities.put(1, new Ability("Flurry", 3, 1, 1, 3, 3, 1, 0)); //3 strikes of 1-3, with a chance to crit on each, so could possibly deal up to 18
 		abilities.put(2, new Ability("Bash", 8, 4, 1, -1, 3, 1, 0)); //high, consistent damage 4-8, but will never crit
 		abilities.put(3, new Ability("Mana bolt", 5, 1, 1, 5, 1, 3, 0)); //cheap attack 1-5, with range
 		abilities.put(4, new Ability("Heal Ally", -6, -1, 1, 5, 1, 3, 2)); //healy boi
-		abilities.put(5, new Ability("Banshee Ball", 12, 3, 5, 5, 1, 4, 0)); //cheap attack 1-5, with range
+		abilities.put(5, new Ability("Banshee Ball", 12, 3, 5, 5, 1, 4, 0, -1, -1, 3, 3)); //cheap attack 1-5, with range
+		abilities.put(6, new Ability("Cleave", 7, 2, 3, 5, 1, 1, 0, -1, 0, 3, 1)); //basic cleave attack
 		
 	}
 	

@@ -18,10 +18,10 @@ public class CharacterSelect extends JPanel {
 	private static final int scale = 7;
 	private static final int h = 35 * scale; //height scale of each fighter
 	private static final int w = 13 * scale; //width scale of each fighter
-	private final int startX; //x value at which the first fighter in fighters[] is drawn
-	private final int startY; //y value at which the first fighter in fighters[] is drawn
 	private static final int spacing = 80; //blank space (x) between the fighters when drawn.
 	private static final int Yspacing = 35;
+	private final int startX; //x value at which the first fighter in fighters[] is drawn
+	private final int startY; //y value at which the first fighter in fighters[] is drawn
 	private int dir = 0; //current direction the fighters are facing
 	private int prevDir = -1; //previous direction the fighters were facing
 	private int prevSelection = 0; //previously selected (moused-over) fighter
@@ -147,7 +147,7 @@ public class CharacterSelect extends JPanel {
 				
 				prevDir = dir;
 				
-				g.fillRect(startX, startY - 10, Main.getFramewidth(), 815); //TODO actuall calculate the height of the rect here and replace the dummy value
+				g.fillRect(startX, startY - 10, Main.getFramewidth(), 815); //TODO actually calculate the height of the rect here and replace the dummy value
 				int i = 0;
 				
 				for(Permanent p : fighters) {

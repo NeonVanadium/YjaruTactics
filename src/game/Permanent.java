@@ -85,15 +85,24 @@ public class Permanent implements Comparable<String>{
 	
 	public void enter(int x, int y){
 		
+		prevX = this.x;
+		prevY = this.y;
+		this.x = x;
+		this.y = y;
+		
+	}
+	
+	public boolean face(int x, int y){
+		
+		int prev = curFrame;
+		
 		if(x < this.x) curFrame = 3;
 		if(x > this.x) curFrame = 1;
 		if(y < this.y) curFrame = 2;
 		if(y > this.y) curFrame = 0;
 		
-		prevX = this.x;
-		prevY = this.y;
-		this.x = x;
-		this.y = y;
+		if(curFrame == prev) return false;
+		return true;
 		
 	}
 	
@@ -205,6 +214,12 @@ public class Permanent implements Comparable<String>{
 		
 	}
 	
+	public boolean face(Permanent other){
+		
+		return face(other.x, other.y);
+		
+	}
+	
 	public int distanceTo(Permanent other){
     	
     	return Math.abs(other.x() - x) + Math.abs(other.y() - y);
@@ -304,12 +319,30 @@ public class Permanent implements Comparable<String>{
 	public boolean isImmortal() { return immortal; }
 	
 	public boolean isSolid() { return solid; }
+	
+	/*public int compareTo(Object o){//for comparing by y position, with lower y's prioritized higher
+		
+		if(o.getClass().getSimpleName().equals("Integer")) return -Integer.compare(y, (int) o);
+		
+		if(o.getClass().getSimpleName().equals("String")) return name.compareTo((String) o);
+		
+		if(o.getClass().getSimpleName().equals("Permanent")) return name.compareTo(((Permanent) o).getName());
+		
+		return 0;
+		
+	}*/
+	
+	public int compareTo(Permanent p){
+		
+		return name.compareTo(((Permanent) p).getName());
+		
+	}
 
+	@Override
 	public int compareTo(String arg0) {
-		
-		return name.compareTo(arg0);
-		
-	};
+		// TODO Auto-generated method stub
+		return 0;
+	}
 	
 
 }
