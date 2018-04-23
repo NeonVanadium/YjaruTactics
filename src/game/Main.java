@@ -18,7 +18,7 @@ public class Main {
 	private static JFrame f = new JFrame();
 	private static LinkedList<Permanent> t1 = new LinkedList<Permanent>(), t2 = new LinkedList<Permanent>();
 	private static Timer t = new Timer();
-	protected static boolean testMode = true;
+	protected static boolean testMode = false;
 	
 	@SuppressWarnings("static-access")
 	public static void main(String[] args) {
@@ -34,7 +34,7 @@ public class Main {
 		f.setDefaultCloseOperation(f.EXIT_ON_CLOSE);
     	
 		if(!testMode) {
-			//Begin character select screen TODO maybe make character select screen a static field
+	
 	    	CharacterSelect select = new CharacterSelect();
 	  
 	    	select.setEnabled(true);
@@ -64,7 +64,7 @@ public class Main {
 	    				
 	    		}
 	    			
-	    	}, 0, 100);
+	    	}, 0, 05);
 		}
 		else {
 			
@@ -101,16 +101,18 @@ public class Main {
     	fighters.put("Andus Uwren", new Permanent("ANDUS", "Sprites/Andus.png", 11, 35, new int[]{ 3 }));
     	fighters.put("Seamus", new Permanent("SEAMUS", "Sprites/Seamus.png", 11, 34, new int[] { 0  }));
     	fighters.put("Tara", new Permanent("TARA", "Sprites/Tara.png", 11, 33, new int[] { 0 }));
+    	fighters.put("Jae Jathien", new Permanent("JAE", "Sprites/Jae.png", 11, 32, new int[] { 0 }));
+    	fighters.put("Manoreyn", new Permanent("MANOREYN", "Sprites/Manoreyn.png", 11, 35, new int[] { 0 }));
+    	fighters.put("Sora Keng", new Permanent("KENG", "Sprites/Sora Keng.png", 11, 34, new int[] { 0 }));
 	}
 	
 	private static void initBoards() {
 		
 		boards = new Hashtable<String, Board>();
 		Tile[][] grid;
-		
-		
+	
 		if(!testMode)  grid = new Tile[15][15]; 
-		else grid = new Tile[15][5]; 
+		else grid = new Tile[4][5]; 
 		
 		for(int i = 0; i < grid.length; i++){
 			
@@ -124,7 +126,7 @@ public class Main {
 		
 		if(!testMode) for(int i = 0; i < grid.length; i++){
 				
-				if(i != 4 && i != 5 && i != 10 && i != 11) grid[i][7] = new Tile(i, 7, "Sprites/cobble.png", true);
+				if(i != 3 && i != 4 && i != 10 && i != 11) grid[i][7] = new Tile(i, 7, "Sprites/cobble.png", true);
 			
 		}
 		
@@ -141,15 +143,15 @@ public class Main {
 		//String name, int high, int low, int cost, int critDenominator, int times, int range, int type
 		
 		//area
-		//String name, int high, int low, int cost, int critDenominator, int times, int range, int type, int rectX, int rectY, int width, int height
+		//String name, int high, int low, int cost, int critDenominator, int times, int range, int type, int width, int height
 		
 		abilities.put(0, new Ability("Swing", 10, 1, 1, 5, 1, 1, 0)); //basic attack 1-10
 		abilities.put(1, new Ability("Flurry", 3, 1, 1, 3, 3, 1, 0)); //3 strikes of 1-3, with a chance to crit on each, so could possibly deal up to 18
 		abilities.put(2, new Ability("Bash", 8, 4, 1, -1, 3, 1, 0)); //high, consistent damage 4-8, but will never crit
 		abilities.put(3, new Ability("Mana bolt", 5, 1, 1, 5, 1, 3, 0)); //cheap attack 1-5, with range
 		abilities.put(4, new Ability("Heal Ally", -6, -1, 1, 5, 1, 3, 2)); //healy boi
-		abilities.put(5, new Ability("Banshee Ball", 12, 3, 5, 5, 1, 4, 0, -1, -1, 3, 3)); //cheap attack 1-5, with range
-		abilities.put(6, new Ability("Cleave", 7, 2, 3, 5, 1, 1, 0, -1, 0, 3, 1)); //basic cleave attack
+		abilities.put(5, new Ability("Banshee Ball", 12, 3, 5, 5, 1, 4, 0, 3, 3)); //cheap attack 1-5, with range
+		abilities.put(6, new Ability("Cleave", 7, 2, 3, 5, 1, 1, 0, 3, 1)); //basic cleave attack
 		
 	}
 	
@@ -204,11 +206,7 @@ public class Main {
 	
 	public static int getFrameheight() { return f.getHeight(); }
 	
-	public static Hashtable<String, Permanent> getFighters(){
-		
-		return fighters;
-		
-	}
+	public static Hashtable<String, Permanent> getFighters(){ return fighters; }
 	
 	public static Hashtable<Integer, Ability> getAbilities() { return abilities; }
 	

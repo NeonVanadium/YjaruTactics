@@ -8,11 +8,12 @@ public class Ability{//TODO change to ability
 	private int cost; //cost (in AP) of the attack
 	private int high; //maximum raw damage dealt to all non-immortal permanents in area of effect
 	private int low; //minimum raw damage dealt to all non-immortal permanents in area of effect
-	private Rectangle area;
 	private int crit; // 1/crit is the chance to deal double damage (higher chance with lower value). If negative, crit impossible
 	private int times; //how many times this attack hits
 	private int range; //the effective range of the attack
 	private int type; //0 = other, 1 = team, 2 = self;
+	private int width; //width of AoE
+	private int height; //height of AoE;
 	
 	//TODO rework type into multiple variables that add more robustness
 	
@@ -29,7 +30,7 @@ public class Ability{//TODO change to ability
 		
 	}
 	
-	public Ability(String name, int high, int low, int cost, int critDenominator, int times, int range, int type, int rectX, int rectY, int width, int height){ //non-single-target
+	public Ability(String name, int high, int low, int cost, int critDenominator, int times, int range, int type, int width, int height){ //non-single-target
 		
 		this.name = name;
 		this.high = high;
@@ -39,7 +40,9 @@ public class Ability{//TODO change to ability
 		this.crit = critDenominator;
 		this.type = type;
 		this.range = range;
-		this.area = new Rectangle(rectX, rectY, width, height);
+		this.width = width;
+		this.height = height;
+		//this.area = new Rectangle(rectX, 0, width, height);
 		
 	}
 	
@@ -67,12 +70,12 @@ public class Ability{//TODO change to ability
 	
 	public int cost() { return cost; }
 	
-	public boolean isAOE() { return area != null; }
+	public boolean isAOE() { return width != 0 && height != 0; }
 	
-	public Rectangle area(Permanent caster) { //the area of effect of the attack
+	public Rectangle area(Permanent caster, int x, int y) { //the area of effect of the attack
 		
-		if(caster.getFacing() == 0 || caster.getFacing() == 2) return area;
-		return new Rectangle(area.y, area.x, area.height, area.width); //rotate
+		if(caster.getFacing() == 0 || caster.getFacing() == 2) return new Rectangle(x - (width), y - (height), width, height);
+		return new Rectangle(x - (height / 2), y - (width / 2), height, width);
 
 		
 	}

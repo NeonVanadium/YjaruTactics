@@ -3,8 +3,11 @@ package game;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.ImageObserver;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Board {
 	
@@ -24,7 +27,19 @@ public class Board {
 		
 	}
 	
-	public Tile getTile(int row, int col) {	return grid[row][col]; }
+	public boolean isInBounds(int row, int col) {
+		
+		if(row < 0 || row >= height() || col < 0 || col >= width()) return false;
+		return true;
+		
+	}
+	
+	public Tile getTile(int row, int col) {	
+		
+		if(isInBounds(row, col)) return grid[row][col]; 
+		return null;
+		
+	}
 	
 	public int toGridScale(int i) { //converts integer i, likely from a mouse event, to the corresponding number within the range of the grid
 		
@@ -79,6 +94,44 @@ public class Board {
     	marked.clear();
     	
     }
+    
+    public List<Permanent> inRange(int distance, int row, int col){ //returns a list of all the permanents within range
+    	
+    	ArrayList<Permanent> l = new ArrayList<Permanent>();
+
+    	inRange(distance + 1, row, col, l);
+    	
+    	//for(Permanent p : l) System.out.println(p.getName());
+    	
+    	return l;
+    	
+    }
+    
+    private void inRange(int distance, int row, int col, List<Permanent> list) {
+    	
+    	if(distance <= 0) {
+    		return;
+    	}
+    	
+    	
+    	if(!isInBounds(row, col)) {
+    		
+    		return;
+    	}
+    	
+    	if(getTile(row, col).occupier() != null) {
+    		
+    		if(list.contains(getTile(row, col).occupier())) return;
+    		list.add(getTile(row, col).occupier());
+    		
+    	}
+    	
+    	inRange(distance - 1, row, col - 1, list);
+    	inRange(distance - 1, row, col + 1, list);
+    	inRange(distance - 1, row - 1, col, list);
+    	inRange(distance - 1, row + 1, col, list);
+    	
+    }
 	
     public void drawTile(Graphics g, int row, int col, ImageObserver observer) { //draws a specific tile
     	
@@ -121,7 +174,7 @@ public class Board {
     	
     	if(distance <= 0) return;
     	
-    	if(x < 0 || x >= width() || y < 0 || y >= height()) return;
+    	if(!isInBounds(y, x)) return;
     	
     	if(marked.contains(to1D(x, y))) return;
     	

@@ -20,7 +20,7 @@ public class Game extends JPanel {
 
 	private static final long serialVersionUID = -4063135471056442683L; //honestly no idea what this is but it gives me a squiggly boi if i don't have it
 	private Board board; //the game board
-	private Popup popup = null; //the current popup;
+	private Popup popup; //the current popup;
     private ArrayDeque<Permanent> units; //all the units, queued for their turn
     private ArrayDeque<Message> console; //most recent ten messages
     private int curTurnAP; //remaining action points for this turn
@@ -131,6 +131,7 @@ public class Game extends JPanel {
     					
     					toConsole(cur.getName() + " readies " + cur.getCurAbility().name() + ".");
     					popup = null;
+    					draw();
     					
     				}
     				
@@ -144,40 +145,37 @@ public class Game extends JPanel {
 	    			
 	    			//mouseClickInfo(x, y);
 	    			
-	    			if(x == cur.x() && y == cur.y()){
+	    			if(e.getButton() == 1 && x == cur.x() && y == cur.y()){
 	    				
 	    				curTurnAP = 0;
 	    				checkTurn();
 	    				
 	    			}
-	    			else if(tile.occupier() != null && cur.canTarget(tile.occupier())){//&& tile.occupier().getTeam() != cur.getTeam() && cur.distanceTo(tile.occupier()) <= cur.getAttacks()[0].range()){ //if this is not cur's current location, this tile has an occupier, and that occupier is not the same team as the current unit
+	    			else if(board.isInBounds(y, x) && tile.occupier() != null && cur.canTarget(tile.occupier())){//&& tile.occupier().getTeam() != cur.getTeam() && cur.distanceTo(tile.occupier()) <= cur.getAttacks()[0].range()){ //if this is not cur's current location, this tile has an occupier, and that occupier is not the same team as the current unit
 					
-						Rectangle area = new Rectangle(0, 0, 0, 0);
+						//Rectangle area = new Rectangle(0, 0, 0, 0);
 						cur.face(tile.occupier());
 						
-						if(cur.getCurAbility().isAOE()){
+						/*if(cur.getCurAbility().isAOE()){
 							
 							System.out.println("AOE");
-							area = cur.getCurAbility().area(cur);
+							area = cur.getCurAbility().area(cur, x, y);
 							
-						}
+						}*/
 						
-						popup = new Popup(board.Xoffset() + (x + area.x) * board.length(), board.Yoffset() + (y + area.y) * board.length(), "AOE TEST", cur.getAbilities());
-						
-						//TODO finalize the code to get all the permanents in area, then move to its own method on probably the board class.
-						for(int i = y + area.y; i < y + area.y + area.height + area.y; i++){
+						/*for(int i = area.y; i <  area.y + area.height; i++){
 							
-							for(int j = x + area.x; j < x + area.x + area.width + area.x; j++){
+							for(int j = area.x; j < area.x + area.width; j++){
 								
-								if(i > -1 && i < board.height() && j > -1 && j < board.width()) System.out.println(board.getTile(i, j).occupier());
+								if(board.isInBounds(i, j)) System.out.println(board.getTile(i, j).occupier());
 								else System.out.println(i + " " + j + " no return.");
 								
 								
 							}
 							
-						}
+						}*/
 						
-						String attack = cur.attack(tile.occupier());
+						String attack = cur.attack(tile);
 						
 						if(!attack.isEmpty()) {
 							
@@ -327,12 +325,14 @@ public class Game extends JPanel {
 	
 	public int getRemainingAP() { return curTurnAP; }
 	
-	private void mouseClickInfo(int x, int y) {//displays information from the tile at row y and col x
+	public Board getBoard() { return board; }
+	
+	/*private void mouseClickInfo(int x, int y) {//displays information from the tile at row y and col x
 		
 		System.out.println("MOUSE CLICK: row " +  y + " col " + x);
 		System.out.println(board.getTile(y, x));
 		
-	}
+	}*/
     
     private void checkTurn() { //checks if cur unit's turn has ended, if so, turn passes to next unit
     	
@@ -367,9 +367,9 @@ public class Game extends JPanel {
     private void info(Graphics g) {//TODO
     	
     	int x = board.Xoffset() - 500;//+ board.width() * board.length() + 10;
-    	int y = board.Yoffset() + 20;
+    	int y = 80;
     	
-    	g.setFont(new Font("Fonts/arial.tff", 10, 20));
+    	g.setFont(new Font("Fonts/Arial.tff", 10, 20));
     	
     	g.setColor(Color.BLACK);
     	
@@ -418,33 +418,26 @@ public class Game extends JPanel {
     	
     	BufferedImage sprite;
     	
-    	/*PriorityQueue<Permanent> drawOrder = new PriorityQueue<Permanent>();
-    	Sort permanents by height and print
-    	for(Permanent p : units){
-    		
-    		drawOrder.add(p);
-    		
-    	}*/
+    	Permanent[] units = Permanent.sortByY(this.units);
     	
     	for(Permanent p : units) {
     		
     		sprite = p.getSprite();
-    		int w = sprite.getWidth() * (board.length() / 20);
-    		int h = sprite.getHeight() * (board.length() / 20);
     		
         	if(cur.x() == p.x() && cur.y() == p.y()) g.setColor(Color.WHITE);
         	else if(p.getTeam() != cur.getTeam()) {
         			
-        		if(/*cur.isAdjacentTo(p)*/cur.distanceTo(p) <= cur.getCurAbility().range()) g.setColor(Color.RED);
-        		else g.setColor(new Color(255, 100, 100));
+        		if(cur.canTarget(p)) g.setColor(Color.RED);
+        		else g.setColor(new Color(255, 150, 150));
         			
         			
         	}
         	else g.setColor(Color.GREEN);		
     		
     		g.drawRect((p.x() * board.length()) + board.Xoffset(), (p.y() * board.length()) + board.Yoffset(), board.length(), board.length());
-    		p.compensatedDraw(3, (p.x() * board.length()) + board.length() / (board.length() / sprite.getWidth()) + board.Xoffset(), (p.y() * board.length()), g, this);
-    		//g.drawImage(sprite, (p.x() * board.length()) + board.length() / (board.length() / sprite.getWidth()) + board.Xoffset(), (p.y() * board.length() - 51) + board.Yoffset(), w, h, this);
+        	p.compensatedDraw(3, (p.x() * board.length()) + board.length() / (board.length() / sprite.getWidth()) + board.Xoffset(), (p.y() * board.length() - 51) + board.Yoffset(), g, this);
+    		
+    		
     		
     	}
 

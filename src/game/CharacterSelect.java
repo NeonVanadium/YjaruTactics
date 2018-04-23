@@ -10,11 +10,9 @@ import javax.swing.JPanel;
 public class CharacterSelect extends JPanel {
 
 	private static final long serialVersionUID = -3729437235743046623L;
-	private Permanent[] fighters;
+	private Permanent[] fighters; //all the fighters
 	private String[] fullnames; //the full names of each fighter
-	private boolean[] taken;
-
-	
+	private boolean[] taken; //keeps track of which fighters have been picked for either team
 	private static final int scale = 7;
 	private static final int h = 35 * scale; //height scale of each fighter
 	private static final int w = 13 * scale; //width scale of each fighter
@@ -46,8 +44,6 @@ public class CharacterSelect extends JPanel {
 			
 		} 
 		
-		//fighters = Main.getFighters().values().toArray(new Permanent[0]);
-		//Arrays.sort(fighters);
 		taken = new boolean[fighters.length];
 		
 		startX = Main.getFramewidth() / 2 - ((8 * (w + spacing)) / 2) + 10;
@@ -75,7 +71,8 @@ public class CharacterSelect extends JPanel {
 							t1pp--;
 							taken[selection] = true;
 							Main.addToTeam1(fighters[selection]);
-							drawMembers(1);
+							writeMember(fighters[selection].getName(), 1);
+							//drawMembers(1);
 						}
 					
 					}
@@ -85,7 +82,8 @@ public class CharacterSelect extends JPanel {
 							t2pp--;
 							Main.addToTeam2(fighters[selection]);
 							taken[selection] = true;
-							drawMembers(2);
+							writeMember(fighters[selection].getName(), 2);
+							//drawMembers(2);
 						}
 					}
 					
@@ -124,8 +122,8 @@ public class CharacterSelect extends JPanel {
 	
 	public void paintComponent(Graphics g) { //dunno but im supposed to have this
 		super.paintComponent(g);
+		init(g);
 		showFighters();	
-		drawMembers(0);
 	}
 	
 	public void showFighters() {
@@ -134,12 +132,11 @@ public class CharacterSelect extends JPanel {
 		
 		if(g != null) {
 		
-			g.setColor(Color.WHITE);
-			g.setFont(g.getFont().deriveFont(20F));
-			g.drawString("CHARACTER SELECT", 20, 20);
+			//g.setColor(Color.WHITE);
+			//g.setFont(g.getFont().deriveFont(20F));
 			
-			g.drawString("Team one: " + t1pp + " pick points to spend.", startX, startY / 3);
-			g.drawString("Team two: " + t2pp + " pick points to spend.", Main.getFramewidth()-(2 * startX), startY / 3);
+			/*g.drawString("Team one: " + t1pp + " pick points to spend.", startX, startY / 3);
+			g.drawString("Team two: " + t2pp + " pick points to spend.", Main.getFramewidth()-(2 * startX), startY / 3);*/
 			
 			g.setColor(Color.DARK_GRAY);
 			
@@ -147,17 +144,19 @@ public class CharacterSelect extends JPanel {
 				
 				prevDir = dir;
 				
-				g.fillRect(startX, startY - 10, Main.getFramewidth(), 815); //TODO actually calculate the height of the rect here and replace the dummy value
+				//g.fillRect(startX, startY - 10, Main.getFramewidth() - (2 * startX), 815); //TODO actually calculate the height of the rect here and replace the dummy value
 				int i = 0;
 				
 				for(Permanent p : fighters) {
 					
 					//TODO make the scale here a variable on the class so future changes can be made with ease
+					g.setColor(Color.DARK_GRAY);
+					g.fillRect((startX + ((w + spacing) * (i % 8))), startY + ((h + Yspacing) * (i / 8)), w, h);					
 					p.compensatedDraw(dir, scale, (startX + ((w + spacing) * (i % 8))), startY + ((h + Yspacing) * (i / 8)), g, this);
 									
 					if(selection < fighters.length && selection > -1) {
 						g.setColor(Color.RED);
-						g.drawRect(startX + ((w + spacing) * (selection % 8)), -5 + startY + ((h + Yspacing) * (selection / 8)), w, h);
+						g.drawRect(startX + ((w + spacing) * (selection % 8)), -8 + startY + ((h + Yspacing) * (selection / 8)), w, h);
 						prevSelection = selection;	
 					}
 					
@@ -177,15 +176,17 @@ public class CharacterSelect extends JPanel {
 				fighters[selection].compensatedDraw(dir, scale, (startX + ((w + spacing) * (selection % 8))), startY + ((h + Yspacing) * (selection / 8)), g, this);
 
 				g.setColor(Color.RED);
-				g.drawRect(startX + ((w + spacing) * (selection % 8)), -5 + startY + ((h + Yspacing) * (selection / 8)), w, h);
+				g.drawRect(startX + ((w + spacing) * (selection % 8)), -8 + startY + ((h + Yspacing) * (selection / 8)), w, h);
 				
 				g.setColor(Color.WHITE);
+				g.setFont(g.getFont().deriveFont(20F));
 				g.drawString("Selected: " + fighters[selection].getName(), startX, Main.getFrameheight() - startY);//(startY + (2 * (h + Yspacing + Yspacing))));
 				prevSelection = selection;
 				
 			}
 			
 		}
+		
 	}
 	
 	private boolean isValidSelection() {
@@ -205,44 +206,38 @@ public class CharacterSelect extends JPanel {
 
 	}
 	
-	private void drawMembers(int team) { //prints the names of the fighters on each team under their respective team header
+	private void init(Graphics g) {
 		
 		g.setColor(Color.DARK_GRAY);
+		g.fillRect(startX, startY - 10, Main.getFramewidth() - (2 * startX), 815); //TODO actually calculate the height of the rect here and replace the dummy value
+		g.setFont(g.getFont().deriveFont(40F));
+		g.setColor(Color.WHITE);
+		String header = "CHARACTER SELECT";
+		g.drawString(header, Main.getFramewidth() / 2 - (header.length() * 15) , 40);
 		g.setFont(g.getFont().deriveFont(20F));
+		g.drawString("Team one: ", 20, 50);
+		g.drawString("Team two: ", startX + (8 * ((13 * scale) + spacing) - 20), 50);
+		
+	}
+	
+	private void writeMember(String name, int team) {
+		
+		g.setFont(g.getFont().deriveFont(20F));
+		g.setColor(Color.WHITE);
 		
 		if(team == 1) {
-			
-			g.fillRect(startX, (startY / 3) - 20, 400, 20 + (30 * Main.getTeam(2).size()));
-			g.setColor(Color.WHITE);
-			
-			int i = 0;
-			for(Permanent p : Main.getTeam(1)) {
 				
-				g.drawString(p.getName(), startX, (startY / 3) + (20 * (i + 1)));
-				i++;
-				
-			}
-			
+			g.drawString(name, 20, 55 + (20 * (Main.getTeam(1).size())));
+		
 		}
 		if(team == 2) {
 			
-			g.fillRect(Main.getFramewidth()-(2 * startX), (startY / 3) - 20, 400, 20 + (30 * Main.getTeam(2).size()));
-			g.setColor(Color.WHITE);
-			
-			int i = 0;
-			for(Permanent p : Main.getTeam(2)) {
-				
-				g.drawString(p.getName(), Main.getFramewidth() - (2 * startX), (startY / 3) + (20 * (i + 1)));
-				i++;
-				
-			}
+			g.drawString(name, startX + (8 * ((13 * scale) + spacing)), 55 + (20 * (Main.getTeam(2).size())));
 			
 		}
 		
-		g.drawString("Team one: " + t1pp + " pick points to spend.", startX, startY / 3);
-		g.drawString("Team two: " + t2pp + " pick points to spend.", Main.getFramewidth()-(2 * startX), startY / 3);
-		
 	}
+	
 	
 	private int toGridScale(MouseEvent e) {
 		
@@ -265,17 +260,5 @@ public class CharacterSelect extends JPanel {
 		return x;
 		
 	}
-	
-	/*private Point toGridScale(int x, int y) {
-		
-		x -= startX;
-		y = startY;
-		
-		x = (x - (x % (w + spacing))) / (w + spacing);
-		
-		
-		return new Point(x, y);
-		
-	}*/
 	
 }

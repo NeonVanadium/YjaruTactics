@@ -7,11 +7,12 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.Hashtable;
 
 import javax.imageio.ImageIO;
 
-public class Permanent implements Comparable<String>{
+public class Permanent {
 	
 	private int x; //x-coordinate of position
 	private int y; //y-coordinate of position
@@ -63,7 +64,7 @@ public class Permanent implements Comparable<String>{
 		
 		if(Main.getGame().getRemainingAP() < a.cost()) return false; //if the ability costs more action points than this permanent has availible
 		
-		if(distanceTo(p) > a.range()) return false;
+		//if(!Main.getGame().getBoard().inRange(a.range(), y, x).contains(p)) return false; //confims that the permanent is targetable
 		
 		if(a.type() == 2 && p != this) return false; //if is a self-spell and target permanent is not the caster
 		
@@ -71,7 +72,9 @@ public class Permanent implements Comparable<String>{
 		
 		if(a.type() == 0 && p.getTeam() == this.getTeam()) return false; //if is a self-spell and target permanent is not on the other team
 		
-		return true;
+		System.out.println(a.range());
+		
+		return Main.getGame().getBoard().inRange(a.range(), y, x).contains(p);
 		
 	}
 	
@@ -85,6 +88,8 @@ public class Permanent implements Comparable<String>{
 	
 	public void enter(int x, int y){
 		
+		face(x, y);
+		
 		prevX = this.x;
 		prevY = this.y;
 		this.x = x;
@@ -97,30 +102,29 @@ public class Permanent implements Comparable<String>{
 		int prev = curFrame;
 		
 		if(x < this.x) curFrame = 3;
-		if(x > this.x) curFrame = 1;
-		if(y < this.y) curFrame = 2;
-		if(y > this.y) curFrame = 0;
+		else if(x > this.x) curFrame = 1;
+		else if(y < this.y) curFrame = 2;
+		else if(y > this.y) curFrame = 0;
 		
 		if(curFrame == prev) return false;
 		return true;
 		
 	}
 	
-	public String attack(Permanent p){ //basic attacks
+	public String attack(Tile t){ //basic attacks
 		
-		return use(abilities[curAbility], p);
+		if(t == null || t.occupier() == null) return "";
+		return use(abilities[curAbility], t.occupier());
 	
 	}
 	
-	public String use(Ability a, Permanent p) {
-		
-		//if(p.getTeam() == team) return ""; 
+	private String use(Ability a, Permanent p) {
 		
 		int damage = 0;
 		
 		if(a.times() == 1) {
 			
-			if((int) (Math.random() * 5) == 0) { //should be a 1/dex chance of missing. TODO confirm this
+			if((int) (Math.random() * dex) == 0) { //should be a 1/dex chance of missing. TODO confirm this
 				
 				return name + ": Miss.";
 				
@@ -320,29 +324,44 @@ public class Permanent implements Comparable<String>{
 	
 	public boolean isSolid() { return solid; }
 	
-	/*public int compareTo(Object o){//for comparing by y position, with lower y's prioritized higher
+	public static Permanent[] sortByY(ArrayDeque<Permanent> d) { //returns an array of all elements of d sorted by y value
 		
-		if(o.getClass().getSimpleName().equals("Integer")) return -Integer.compare(y, (int) o);
-		
-		if(o.getClass().getSimpleName().equals("String")) return name.compareTo((String) o);
-		
-		if(o.getClass().getSimpleName().equals("Permanent")) return name.compareTo(((Permanent) o).getName());
-		
-		return 0;
-		
-	}*/
+    	Permanent[] arr = d.toArray(new Permanent[0]);
+    	int minY;
+    	int minYindex;
+    	Permanent temp;
+    	
+    	for(int i = 0; i < arr.length - 1; i++) {
+    		
+    		minY = arr[i].y;
+    		minYindex = i;
+    		
+    		for(int j = i + 1; j < arr.length; j++) {
+    			
+    			if(arr[j].y < minY) {
+    				
+    				minY = arr[j].y;
+    				minYindex = j;
+    				
+    			}
+    			
+    		}
+    		
+    		if(minYindex != i) {
+    			
+    			temp = arr[i];
+    			arr[i] = arr[minYindex];
+    			arr[minYindex] = temp;
+    			
+    		}
+    		
+    	}
+    	
+    	return arr;
+    	
+    }
 	
-	public int compareTo(Permanent p){
-		
-		return name.compareTo(((Permanent) p).getName());
-		
-	}
 
-	@Override
-	public int compareTo(String arg0) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 	
 
 }
