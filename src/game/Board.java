@@ -101,8 +101,6 @@ public class Board {
 
     	inRange(distance + 1, row, col, l);
     	
-    	//for(Permanent p : l) System.out.println(p.getName());
-    	
     	return l;
     	
     }
@@ -115,7 +113,6 @@ public class Board {
     	
     	
     	if(!isInBounds(row, col)) {
-    		
     		return;
     	}
     	

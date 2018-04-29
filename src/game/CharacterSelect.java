@@ -32,6 +32,8 @@ public class CharacterSelect extends JPanel {
 
 	public CharacterSelect() {
 		
+		this.setBackground(Color.DARK_GRAY);
+		
 		fullnames = Main.getFighters().keySet().toArray(new String[0]);
 
 		Arrays.sort(fullnames);
@@ -94,6 +96,8 @@ public class CharacterSelect extends JPanel {
 			
 		});
 		
+		//g.drawRect(0, 0, Main.getFramewidth(), Main.getFrameheight()); //THIS SHOULD NOT BE NECESSARY
+		
 	}
 	
 	public void incrementDir() {
@@ -124,6 +128,7 @@ public class CharacterSelect extends JPanel {
 		super.paintComponent(g);
 		init(g);
 		showFighters();	
+		init(g);
 	}
 	
 	public void showFighters() {
@@ -131,27 +136,21 @@ public class CharacterSelect extends JPanel {
 		g = getGraphics();
 		
 		if(g != null) {
-		
-			//g.setColor(Color.WHITE);
-			//g.setFont(g.getFont().deriveFont(20F));
 			
-			/*g.drawString("Team one: " + t1pp + " pick points to spend.", startX, startY / 3);
-			g.drawString("Team two: " + t2pp + " pick points to spend.", Main.getFramewidth()-(2 * startX), startY / 3);*/
-			
+			g.drawRect(0, 0, Main.getFramewidth(), Main.getFrameheight()); //THIS SHOULD NOT BE NECESSARY
 			g.setColor(Color.DARK_GRAY);
 			
 			if(dir != prevDir) {
 				
 				prevDir = dir;
-				
-				//g.fillRect(startX, startY - 10, Main.getFramewidth() - (2 * startX), 815); //TODO actually calculate the height of the rect here and replace the dummy value
+			
 				int i = 0;
 				
 				for(Permanent p : fighters) {
 					
 					//TODO make the scale here a variable on the class so future changes can be made with ease
 					g.setColor(Color.DARK_GRAY);
-					g.fillRect((startX + ((w + spacing) * (i % 8))), startY + ((h + Yspacing) * (i / 8)), w, h);					
+					g.fillRect((startX + ((w + spacing) * (i % 8))), startY + ((h + Yspacing) * (i / 8)) - 7, w , h );					
 					p.compensatedDraw(dir, scale, (startX + ((w + spacing) * (i % 8))), startY + ((h + Yspacing) * (i / 8)), g, this);
 									
 					if(selection < fighters.length && selection > -1) {
@@ -168,11 +167,11 @@ public class CharacterSelect extends JPanel {
 			}
 			if(isValidSelection()) {
 				
-				g.fillRect(startX, Main.getFrameheight() - startY - 20, 400, 30); //the "selected" text
-				g.fillRect((startX + ((w + spacing) * (prevSelection % 8))), -10 + startY + ((h + Yspacing) * (prevSelection / 8)), w + 1, h + 15);
+				g.fillRect(startX, Main.getFrameheight() - 100, 600, 30); //the "selected" text
+				g.fillRect((startX + ((w + spacing) * (prevSelection % 8))), -12 + startY + ((h + Yspacing) * (prevSelection / 8)), w + 10, h + 10);
 				
 				fighters[prevSelection].compensatedDraw(dir, scale, (startX + ((w + spacing) * (prevSelection % 8))), startY + ((h + Yspacing) * (prevSelection / 8)), g, this);
-				g.fillRect((startX + (w + spacing) * selection), startY, w, h);
+				g.fillRect((startX + ((w + spacing) * (selection % 8))), -12 + startY + ((h + Yspacing) * (selection / 8)), w + 10, h + 10);
 				fighters[selection].compensatedDraw(dir, scale, (startX + ((w + spacing) * (selection % 8))), startY + ((h + Yspacing) * (selection / 8)), g, this);
 
 				g.setColor(Color.RED);
@@ -180,7 +179,9 @@ public class CharacterSelect extends JPanel {
 				
 				g.setColor(Color.WHITE);
 				g.setFont(g.getFont().deriveFont(20F));
-				g.drawString("Selected: " + fighters[selection].getName(), startX, Main.getFrameheight() - startY);//(startY + (2 * (h + Yspacing + Yspacing))));
+				
+				String selectedText = "Selected: " + fighters[selection].getName() + ". (Abilities: " + fighters[selection].abilitiesString() + ")";
+				g.drawString(selectedText, startX, Main.getFrameheight() - 80);//(startY + (2 * (h + Yspacing + Yspacing))));
 				prevSelection = selection;
 				
 			}
@@ -208,8 +209,9 @@ public class CharacterSelect extends JPanel {
 	
 	private void init(Graphics g) {
 		
+		this.setBackground(Color.DARK_GRAY);
 		g.setColor(Color.DARK_GRAY);
-		g.fillRect(startX, startY - 10, Main.getFramewidth() - (2 * startX), 815); //TODO actually calculate the height of the rect here and replace the dummy value
+		g.fillRect(startX, startY, Main.getFramewidth(), Main.getFrameheight());//g.fillRect(startX, startY - 10, Main.getFramewidth() - (2 * startX), 815); //TODO actually calculate the height of the rect here and replace the dummy value
 		g.setFont(g.getFont().deriveFont(40F));
 		g.setColor(Color.WHITE);
 		String header = "CHARACTER SELECT";

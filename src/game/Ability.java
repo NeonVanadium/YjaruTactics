@@ -1,5 +1,6 @@
 package game;
 
+import java.awt.Color;
 import java.awt.Rectangle;
 
 public class Ability{//TODO change to ability
@@ -52,9 +53,13 @@ public class Ability{//TODO change to ability
 	
 	public int times() { return times; }
 	
+	public int high() { return high; }
+	
 	public boolean didCrit() { //rolls to see if crit
 		
-		if(crit < 0) return false;
+		if(crit < 0){
+			return false;
+		}
 		
 		return (int) (Math.random() * crit) == 0;
 

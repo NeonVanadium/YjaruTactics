@@ -18,7 +18,7 @@ public class Main {
 	private static JFrame f = new JFrame();
 	private static LinkedList<Permanent> t1 = new LinkedList<Permanent>(), t2 = new LinkedList<Permanent>();
 	private static Timer t = new Timer();
-	protected static boolean testMode = false;
+	protected static boolean testMode = true;
 	
 	@SuppressWarnings("static-access")
 	public static void main(String[] args) {
@@ -27,21 +27,24 @@ public class Main {
 		initFighters();
     	
     	//Set up frame
-		f.setTitle("GAME");
-		f.setLocation(-10, 0); //okay whose idea was it for the top left corner of the screen to be at x = -10
-		f.setSize(1940, 1060);
+		f.setTitle("Tactics");
+		f.setLocation(0, 0); //okay whose idea was it for the top left corner of the screen to be at x = -10
+		f.setUndecorated(true);
+		f.setAlwaysOnTop(true);
+		f.setSize(1920, 1080);
 		f.setBackground(Color.BLACK);
 		f.setDefaultCloseOperation(f.EXIT_ON_CLOSE);
+		
     	
 		if(!testMode) {
 	
 	    	CharacterSelect select = new CharacterSelect();
-	  
 	    	select.setEnabled(true);
 	    	select.setVisible(true);
 	    	select.setBackground(Color.DARK_GRAY);
 	    	f.add(select);
 	    	f.setVisible(true);
+	    	select.repaint();
 	    		
 	    	t.scheduleAtFixedRate(new TimerTask() { //rotates the characters every .8 seconds
 	    			
@@ -147,7 +150,7 @@ public class Main {
 		
 		abilities.put(0, new Ability("Swing", 10, 1, 1, 5, 1, 1, 0)); //basic attack 1-10
 		abilities.put(1, new Ability("Flurry", 3, 1, 1, 3, 3, 1, 0)); //3 strikes of 1-3, with a chance to crit on each, so could possibly deal up to 18
-		abilities.put(2, new Ability("Bash", 8, 4, 1, -1, 3, 1, 0)); //high, consistent damage 4-8, but will never crit
+		abilities.put(2, new Ability("Bash", 8, 4, 1, -1, 1, 1, 0)); //consistent damage 4-8, but will never crit
 		abilities.put(3, new Ability("Mana bolt", 5, 1, 1, 5, 1, 3, 0)); //cheap attack 1-5, with range
 		abilities.put(4, new Ability("Heal Ally", -6, -1, 1, 5, 1, 3, 2)); //healy boi
 		abilities.put(5, new Ability("Banshee Ball", 12, 3, 5, 5, 1, 4, 0, 3, 3)); //cheap attack 1-5, with range
@@ -209,5 +212,11 @@ public class Main {
 	public static Hashtable<String, Permanent> getFighters(){ return fighters; }
 	
 	public static Hashtable<Integer, Ability> getAbilities() { return abilities; }
+	
+	public static void toConsole(String message){
+		
+		g.toConsole(message);
+		
+	}
 	
 }

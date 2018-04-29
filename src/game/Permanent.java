@@ -118,53 +118,67 @@ public class Permanent {
 	
 	}
 	
+	private int use(Ability a){
+		
+		if((int) (Math.random() * dex) == 0) { //should be a 1/dex chance of missing. TODO confirm this
+			
+			return 0; 
+			
+		}
+		
+		if(a.didCrit()) {
+			
+			int damage = a.high() + a.damageRoll(); //max possible damage plus an extra roll
+			
+			if(damage > 0) Main.getGame().toConsole("<<<CRIT>>>", Color.RED);
+			if(damage < 0) Main.getGame().toConsole("<<<CRIT HEAL>>>", Color.GREEN);
+			
+			return damage;
+			
+		}
+		
+		return a.damageRoll();
+		
+	}
+	
 	private String use(Ability a, Permanent p) {
 		
 		int damage = 0;
 		
 		if(a.times() == 1) {
 			
-			if((int) (Math.random() * dex) == 0) { //should be a 1/dex chance of missing. TODO confirm this
-				
-				return name + ": Miss.";
-				
-			}
-			
-			if(a.didCrit()) {
-				
-				
-				damage = 2 * a.damageRoll();
-				
-				if(damage > 0) Main.getGame().toConsole("<<<CRIT>>>", Color.RED);
-				if(damage < 0) Main.getGame().toConsole("<<<CRIT HEAL>>>", Color.GREEN);
-				
-			}
-			
-			damage = a.damageRoll();
+			damage = use(a);
 			
 		}
 		else {
 			
 			int total = 0;
 			int numCrits = 0;
+			int numHits = 0;
+			int temp;
 			
 			for(int i = 0; i < a.times(); i++) {
 				
-				if(a.didCrit()) {
-					
-					total += 2 * a.damageRoll();
-					numCrits += 1;
-					
-				}
+				temp = use(a);
+				
+				if(temp != 0) numHits++; //if this attack hit
+				if(temp > a.high()) numCrits++; //if this attack was a crit (since a crit must, by definition, be higher than the high damage bound)
 				
 				total += a.damageRoll();
 				
 			}
 			
 			if(numCrits > 0) Main.getGame().toConsole("<<<CRIT x" + numCrits + ">>>", Color.RED);
+			if(numHits > 0) Main.toConsole("Hit " + numHits + " times.");
 
 			damage = total;
 
+		}
+		
+		if(damage == 0){
+			
+			return(name + "'s " + a.name() + " failed.");
+			
 		}
 		
 		p.changeHealth(-damage);
@@ -181,6 +195,23 @@ public class Permanent {
 		return true;
 		
 	} 
+	
+	public String abilitiesString(){
+		
+		String str = "";
+		
+		boolean first = true;
+		for(Ability a : abilities){
+			
+			if(!first) str += ", ";
+			else first = false;
+			str += a.name();
+			
+		}
+		
+		return str;
+		
+	}
 	
 	public Ability[] getAbilities() { return abilities; }
 	
@@ -361,7 +392,4 @@ public class Permanent {
     	
     }
 	
-
-	
-
 }
