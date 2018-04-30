@@ -175,12 +175,11 @@ public class Game extends JPanel {
 							
 						}*/
 						
-						String attack = cur.attack(tile);
 						
-						if(!attack.isEmpty()) {
+						if(cur.attack(tile)) {
 							
 							curTurnAP = 0;
-							toConsole(attack);
+							//toConsole(attack);
 							if(!tile.occupier().isAlive()) {
 								
 								toConsole(tile.occupier().getName() + " DIES", Color.RED);
@@ -437,8 +436,7 @@ public class Game extends JPanel {
     		g.drawRect((p.x() * board.length()) + board.Xoffset(), (p.y() * board.length()) + board.Yoffset(), board.length(), board.length());
         	p.compensatedDraw(3, (p.x() * board.length()) + board.length() / (board.length() / sprite.getWidth()) + board.Xoffset(), (p.y() * board.length() - 51) + board.Yoffset(), g, this);
     		
-    		
-    		
+
     	}
 
     }

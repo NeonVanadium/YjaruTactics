@@ -18,7 +18,7 @@ public class Main {
 	private static JFrame f = new JFrame();
 	private static LinkedList<Permanent> t1 = new LinkedList<Permanent>(), t2 = new LinkedList<Permanent>();
 	private static Timer t = new Timer();
-	protected static boolean testMode = true;
+	protected static boolean testMode = false;
 	
 	@SuppressWarnings("static-access")
 	public static void main(String[] args) {
@@ -30,7 +30,7 @@ public class Main {
 		f.setTitle("Tactics");
 		f.setLocation(0, 0); //okay whose idea was it for the top left corner of the screen to be at x = -10
 		f.setUndecorated(true);
-		f.setAlwaysOnTop(true);
+		//f.setAlwaysOnTop(true);
 		f.setSize(1920, 1080);
 		f.setBackground(Color.BLACK);
 		f.setDefaultCloseOperation(f.EXIT_ON_CLOSE);

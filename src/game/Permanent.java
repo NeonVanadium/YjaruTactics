@@ -72,8 +72,6 @@ public class Permanent {
 		
 		if(a.type() == 0 && p.getTeam() == this.getTeam()) return false; //if is a self-spell and target permanent is not on the other team
 		
-		System.out.println(a.range());
-		
 		return Main.getGame().getBoard().inRange(a.range(), y, x).contains(p);
 		
 	}
@@ -111,9 +109,9 @@ public class Permanent {
 		
 	}
 	
-	public String attack(Tile t){ //basic attacks
+	public boolean attack(Tile t){ //true of succeeded
 		
-		if(t == null || t.occupier() == null) return "";
+		if(t == null || t.occupier() == null) return false;
 		return use(abilities[curAbility], t.occupier());
 	
 	}
@@ -141,7 +139,7 @@ public class Permanent {
 		
 	}
 	
-	private String use(Ability a, Permanent p) {
+	private boolean use(Ability a, Permanent p) {
 		
 		int damage = 0;
 		
@@ -177,13 +175,15 @@ public class Permanent {
 		
 		if(damage == 0){
 			
-			return(name + "'s " + a.name() + " failed.");
+			Main.toConsole(name + "'s " + a.name() + " failed.");
+			return false;
 			
 		}
 		
 		p.changeHealth(-damage);
 		
-		return name + ": " + a.name().toUpperCase() + " for " + damage + " on " + p.getName() + ".";
+		Main.toConsole(name + ": " + a.name().toUpperCase() + " for " + damage + " on " + p.getName() + ".");
+		return true;
 		
 	}
 	
